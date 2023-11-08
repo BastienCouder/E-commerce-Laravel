@@ -1,7 +1,6 @@
-import Header from "./Header";
-import Seo from "./Seo";
-
 import { ReactNode } from "react";
+import Header from "./Header";
+import { Toaster } from "sonner";
 
 interface MainLayoutProps {
     children: ReactNode;
@@ -10,14 +9,9 @@ interface MainLayoutProps {
 export default function MainLayout({ children }: MainLayoutProps) {
     return (
         <>
-            <Seo
-                title="E-commerce - laravel"
-                description="Description de la page"
-                keywords="Mots-clés, SEO, Balises, Head"
-                iconUrl={"/vite.svg"}
-            />
             <Header />
             <main>{children}</main>
+            <Toaster expand={false} position="bottom-left" />
         </>
     );
 }

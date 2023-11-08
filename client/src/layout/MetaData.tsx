@@ -1,24 +1,21 @@
 import Helmet from "react-helmet";
 
-interface SeoProps {
+interface MetaDataProps {
     title: string;
     description: string;
     keywords: string;
-    iconUrl: string;
 }
 
-export default function Seo({
+export default function MetaData({
     title,
     description,
     keywords,
-    iconUrl,
-}: SeoProps) {
+}: MetaDataProps) {
     return (
         <Helmet>
             <title>{title}</title>
             <meta name="description" content={description} />
             <meta name="keywords" content={keywords} />
-            {iconUrl && <link rel="icon" href={iconUrl} type="image/svg+xml" />}
         </Helmet>
     );
 }

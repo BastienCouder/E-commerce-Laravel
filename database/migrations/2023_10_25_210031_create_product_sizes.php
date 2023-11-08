@@ -13,20 +13,16 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('countries', function (Blueprint $table) {
-            $table->string('code', 3)->primary();
-            $table->string('name', 255);
-            $table->jsonb('states')->nullable();
+        Schema::create('product_sizes', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('product_id')->constrained();
+            $table->foreignId('size_id')->constrained('sizes');
+            $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
-        Schema::dropIfExists('countries');
+        Schema::dropIfExists('product_sizes');
     }
 };

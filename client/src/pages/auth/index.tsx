@@ -1,5 +1,3 @@
-"use client";
-
 //hooks
 import { useCallback, useState } from "react";
 
@@ -34,17 +32,13 @@ import ShowPassword from "../../components/ShowPassword";
 //Link
 import { Link } from "react-router-dom";
 import axios from "axios";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 //Utils
 import { env } from "@/lib/env";
 
-interface AuthProps {
-    registerForm: (formData: FormData) => Promise<void>;
-}
-
-export default function Auth({ registerForm }: AuthProps) {
-    const history = useHistory();
+export default function Auth() {
+    const navigate = useNavigate();
     const [checkboxChecked, setCheckboxChecked] = useState(false);
     const [variant, setVariant] = useState("login");
     const [error, setError] = useState("");
@@ -77,16 +71,16 @@ export default function Auth({ registerForm }: AuthProps) {
             const email = form.getValues("email");
             const password = form.getValues("password");
 
-            const response = await axios.post(
-                `${env.API_URL}`,
-                {
-                    email,
-                    password,
-                },
-                { withCredentials: true }
-            );
-            console.log(response);
-            history.push("/nouvelle-page");
+            // const response = await axios.post(
+            //     `${env.API_URL}`,
+            //     {
+            //         email,
+            //         password,
+            //     },
+            //     { withCredentials: true }
+            // );
+            // console.log(response);
+            // navigate("/");
         } catch (error) {
             console.error(
                 "Une erreur s'est produite lors de la connexion : ",
@@ -111,7 +105,6 @@ export default function Auth({ registerForm }: AuthProps) {
 
         try {
             setCheckboxChecked(!checkboxChecked);
-            await registerForm(formData);
             login();
         } catch (error) {
             console.error("An error occurred during registration:", error);
@@ -119,7 +112,7 @@ export default function Auth({ registerForm }: AuthProps) {
                 return;
             }
         }
-    }, [form, login, registerForm, checkboxChecked]);
+    }, [form, login, checkboxChecked]);
 
     const handleClickCheckbox = useCallback(() => {
         setCheckboxChecked(!checkboxChecked);
@@ -127,21 +120,29 @@ export default function Auth({ registerForm }: AuthProps) {
 
     return (
         <>
-            <div className="w-full h-full flex flex-col justify-center items-center space-y-10">
-                <h2 className="text-4xl">
+            <div className="w-full h-full flex flex-col justify-center items-center space-y-2">
+                <h2 className="text-2xl">
                     {variant === "login" ? "Se connecter" : "S'inscrire"}
                 </h2>
-                <div className="bg-primary w-full md:w-1/2 xl:w-1/3 p-8 flex flex-col items-center space-y-4">
+                <div className="w-full md:w-1/2 xl:w-1/3 p-4 flex flex-col items-center">
                     <Form {...form}>
                         <form
                             onSubmit={form.handleSubmit(() =>
                                 variant === "login" ? login() : register()
                             )}
-                            className="w-full flex flex-col justify-center items-center space-y-4"
+                            className="w-full flex flex-col justify-center items-center space-y-2"
                         >
                             {error ? (
                                 <small className="text-red-500">{error}</small>
                             ) : null}
+                            <div className="w-full flex items-center">
+                                <div className="w-1/2 h-px bg-primary"></div>
+                                <p className="px-8 flex justify-center items-center">
+                                    Ou
+                                </p>
+                                <div className="w-1/2 h-px bg-primary"></div>
+                            </div>
+                            <div className="flex space-x-8 items-center cursor-pointer "></div>
                             {variant === "register" && (
                                 <>
                                     {/* name */}
@@ -241,14 +242,7 @@ export default function Auth({ registerForm }: AuthProps) {
                                         : "S'inscrire"}
                                 </Button>
                             </div>
-                            <div className="w-full flex items-center">
-                                <div className="w-1/2 h-px bg-white"></div>
-                                <p className="px-8 flex justify-center items-center">
-                                    Ou
-                                </p>
-                                <div className="w-1/2 h-px bg-white"></div>
-                            </div>
-                            <div className="flex space-x-8 items-center cursor-pointer "></div>
+
                             <p>
                                 {variant === "login"
                                     ? "Première fois ? "
