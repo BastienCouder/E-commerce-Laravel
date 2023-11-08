@@ -1,3 +1,9 @@
+import Routes from "./routes";
+
 export default function App() {
-    return <>hello worl !!</>;
+    return (
+        <>
+            <Routes />
+        </>
+    );
 }
