@@ -27,21 +27,25 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 
 //components
-import ShowPassword from "../../components/ShowPassword";
+import ShowPassword from "../components/ShowPassword";
 
 //Link
 import { Link } from "react-router-dom";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 //Utils
-import { env } from "@/lib/env";
+
+import { AiOutlineGoogle } from "react-icons/ai";
+import axiosClient from "@/axios-client";
+import { useStateContext } from "@/context/ContextProvider";
 
 export default function Auth() {
-    const navigate = useNavigate();
+    const { setUser, setToken } = useStateContext();
+    // const navigate = useNavigate();
     const [checkboxChecked, setCheckboxChecked] = useState(false);
     const [variant, setVariant] = useState("login");
     const [error, setError] = useState("");
+    const [errorCheckbox, setErrorCheckbox] = useState("");
 
     const formResolver =
         variant === "login"
@@ -62,12 +66,15 @@ export default function Auth() {
     const login = useCallback(async () => {
         try {
             if (!checkboxChecked) {
-                setError("Vous devez accepter les termes et conditions.");
+                setErrorCheckbox(
+                    "Vous devez accepter les termes et conditions."
+                );
                 return;
             } else {
-                setError("");
+                setErrorCheckbox("");
             }
 
+            const formData = new FormData();
             const email = form.getValues("email");
             const password = form.getValues("password");
 
@@ -82,9 +89,8 @@ export default function Auth() {
             // console.log(response);
             // navigate("/");
         } catch (error) {
-            console.error(
-                "Une erreur s'est produite lors de la connexion : ",
-                error
+            setError(
+                "Une erreur s'est produite lors de la connexion : " + error
             );
             throw error;
         }
@@ -92,10 +98,10 @@ export default function Auth() {
 
     const register = useCallback(async () => {
         if (!checkboxChecked) {
-            setError("Vous devez accepter les termes et conditions.");
+            setErrorCheckbox("Vous devez accepter les termes et conditions.");
             return;
         } else {
-            setError("");
+            setErrorCheckbox("");
         }
 
         const formData = new FormData();
@@ -104,10 +110,24 @@ export default function Auth() {
         formData.append("password", form.getValues("password"));
 
         try {
+            axiosClient
+                .post("/signup", formData)
+                .then(({ data }) => {
+                    setUser(data.user);
+                    setToken(data.token);
+                })
+                .catch((err) => {
+                    const response = err.response;
+                    if (response && response.status === 422) {
+                        setError(response.data.errors);
+                    }
+                });
             setCheckboxChecked(!checkboxChecked);
             login();
         } catch (error) {
-            console.error("An error occurred during registration:", error);
+            setError(
+                "Une erreur s'est produite lors de l'enregistrement : " + error
+            );
             if (error instanceof Error) {
                 return;
             }
@@ -120,8 +140,8 @@ export default function Auth() {
 
     return (
         <>
-            <div className="w-full h-full flex flex-col justify-center items-center space-y-2">
-                <h2 className="text-2xl">
+            <div className="w-full h-full my-12 flex flex-col justify-center items-center space-y-2">
+                <h2 className="text-2xl text-primary">
                     {variant === "login" ? "Se connecter" : "S'inscrire"}
                 </h2>
                 <div className="w-full md:w-1/2 xl:w-1/3 p-4 flex flex-col items-center">
@@ -135,6 +155,15 @@ export default function Auth() {
                             {error ? (
                                 <small className="text-red-500">{error}</small>
                             ) : null}
+                            <div className="w-full py-2">
+                                <Button
+                                    aria-label="connexion ou insription"
+                                    className="w-full h-12 flex gap-x-4 items-center"
+                                >
+                                    <AiOutlineGoogle size={20} />
+                                    Google
+                                </Button>
+                            </div>
                             <div className="w-full flex items-center">
                                 <div className="w-1/2 h-px bg-primary"></div>
                                 <p className="px-8 flex justify-center items-center">
@@ -211,35 +240,45 @@ export default function Auth() {
                                     </FormItem>
                                 )}
                             />
-                            <div className="w-full items-top flex space-x-2">
-                                <Checkbox
-                                    id="terms1"
-                                    onClick={handleClickCheckbox}
-                                />
-                                <div className="grid gap-1.5 leading-none">
-                                    <label
-                                        htmlFor="terms1"
-                                        className="text-sm font-medium leading-none cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                        <Link
-                                            to={"/politique-de-confidentialite"}
+                            <div className="w-full items-top flexflex-col">
+                                <div className="flex  gap-x-2">
+                                    <Checkbox
+                                        id="terms1"
+                                        onClick={handleClickCheckbox}
+                                    />
+                                    <div className="grid gap-1.5 leading-none">
+                                        <label
+                                            htmlFor="terms1"
+                                            className="text-sm font-medium leading-none cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                                         >
-                                            Accepter les termes et conditions
-                                        </Link>
-                                    </label>
+                                            <Link
+                                                to={
+                                                    "/politique-de-confidentialite"
+                                                }
+                                            >
+                                                Accepter les termes et
+                                                conditions
+                                            </Link>
+                                        </label>
+                                    </div>
                                 </div>
+                                {errorCheckbox ? (
+                                    <small className="font-semibold text-red-500">
+                                        {errorCheckbox}
+                                    </small>
+                                ) : null}
                             </div>
-                            <div className="py-4">
+                            <div className="w-full py-4">
                                 <Button
                                     aria-label="connexion ou insription"
                                     onClick={
                                         variant === "login" ? login : register
                                     }
-                                    size="lg"
+                                    className="w-full"
                                 >
                                     {variant === "login"
-                                        ? "Se connecter"
-                                        : "S'inscrire"}
+                                        ? "Se connecter avec l'email"
+                                        : "S'inscrire avec l'email"}
                                 </Button>
                             </div>
 

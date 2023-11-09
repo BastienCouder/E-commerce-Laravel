@@ -1,11 +1,5 @@
+// Utilisez CustomBrowserRouter dans votre application
 import { Helmet } from "react-helmet";
-
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Home from "./pages/home";
-import Cart from "./pages/cart";
-import Products from "./pages/products";
-import ProductDetail from "./pages/products/ProductDetail";
-import Auth from "./pages/auth";
 
 export default function App() {
     const iconUrl = "/vite.svg";
@@ -21,21 +15,6 @@ export default function App() {
                     <link rel="icon" href={iconUrl} type="image/svg+xml" />
                 )}
             </Helmet>
-            <Router>
-                <Routes>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/auth" element={<Auth />} />
-                    <Route
-                        path="/products/:categorySlug"
-                        element={<Products />}
-                    />
-                    <Route
-                        path="/products/:categorySlug/:productId"
-                        element={<ProductDetail />}
-                    />
-                    <Route path="/cart" element={<Cart />} />
-                </Routes>
-            </Router>
         </>
     );
 }

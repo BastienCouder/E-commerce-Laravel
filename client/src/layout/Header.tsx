@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/navigation-menu";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-import { LogOut } from "lucide-react";
+import { LogOut, User, UserCircle2 } from "lucide-react";
 import React from "react";
 import { AiOutlineUser } from "react-icons/ai";
 import { Link, useLocation } from "react-router-dom";
@@ -151,7 +151,7 @@ export default function Header() {
                     <div className="flex items-center gap-x-4">
                         <DropdownMenu>
                             <DropdownMenuTrigger>
-                                <AiOutlineUser size={25} />
+                                <UserCircle2 color="#25354c" />
                             </DropdownMenuTrigger>
                             <DropdownMenuContent>
                                 <DropdownMenuLabel>
@@ -161,14 +161,21 @@ export default function Header() {
                                 <DropdownMenuItem>
                                     <Link
                                         to="/auth"
-                                        className="font-semibold mx-6"
+                                        className="font-semibold flex"
                                     >
-                                        Profil
+                                        <User
+                                            color="#25354c"
+                                            className="mr-2 h-4 w-4"
+                                        />
+                                        <span> Profil</span>
                                     </Link>
                                 </DropdownMenuItem>
 
                                 <DropdownMenuItem>
-                                    <LogOut className="mr-2 h-4 w-4" />
+                                    <LogOut
+                                        color="#25354c"
+                                        className="mr-2 h-4 w-4"
+                                    />
                                     <span>Deconnexion</span>
                                 </DropdownMenuItem>
                             </DropdownMenuContent>

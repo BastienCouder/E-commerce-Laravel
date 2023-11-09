@@ -3,9 +3,15 @@ import { Button } from "@/components/ui/button";
 import { useTransition } from "react";
 import { toast } from "sonner";
 
-interface AddToCartButtonProps {}
+interface AddToCartButtonProps {
+    selectedSize: null;
+    handleAddToCartClick(): any;
+}
 
-export default function AddToCartButton({}: AddToCartButtonProps) {
+export default function AddToCartButton({
+    selectedSize,
+    handleAddToCartClick,
+}: AddToCartButtonProps) {
     const [isPending, startTransition] = useTransition();
 
     return (
@@ -14,6 +20,7 @@ export default function AddToCartButton({}: AddToCartButtonProps) {
                 aria-label="Ajouter au panier"
                 onClick={() => {
                     startTransition(() => {
+                        handleAddToCartClick();
                         toast.success("Produit ajouté avec succès");
                     });
                 }}

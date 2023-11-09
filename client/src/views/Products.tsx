@@ -1,6 +1,5 @@
 import CardProduct from "@/components/CardProduct";
 import products from "@/data";
-import MainLayout from "@/layout";
 import MetaData from "@/layout/MetaData";
 import { useParams } from "react-router-dom";
 
@@ -11,7 +10,7 @@ export default function Products() {
     );
 
     return (
-        <MainLayout>
+        <>
             <MetaData
                 title="Page Products"
                 description="Bienvenue sur notre page d'accueil"
@@ -29,6 +28,6 @@ export default function Products() {
                     ))}
                 </ul>
             </section>
-        </MainLayout>
+        </>
     );
 }
