@@ -1,5 +1,8 @@
 <?php
 
+use App\Models\Order;
+use App\Models\Cart;
+use App\Models\DeliveryItem;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,10 +18,10 @@ return new class extends Migration
     {
         Schema::create('order_items', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('order_id')->references('id')->on('orders');
-            $table->foreignId('product_id')->references('id')->on('products');
-            $table->integer('quantity');
-            $table->decimal('unit_price');
+            $table->foreignIdFor(Order::class, 'order_id')->nullable();
+            $table->foreignIdFor(Cart::class, 'cart_id')->nullable();
+            $table->boolean('isPaid');
+            $table->foreignIdFor(DeliveryItem::class, 'deliveryItem_id')->nullable();
             $table->timestamps();
         });
     }

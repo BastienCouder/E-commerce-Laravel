@@ -3,7 +3,7 @@ import { useState, useCallback } from "react";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 
 interface ShowPasswordProps {
-  password: string;
+  password: string | null | undefined;
   setPassword: (value: string) => void;
 }
 
@@ -24,7 +24,7 @@ export default function ShowPassword({
         placeholder="Mot de passe"
         required={false}
         type={showPassword ? "text" : "password"}
-        value={password}
+        value={password!}
         onChange={(e) => setPassword(e.target.value)}
       />
       <button

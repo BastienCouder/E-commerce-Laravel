@@ -11,59 +11,54 @@ import Cart from "./views/Cart";
 import MainLayout from "./layout/MainLayout";
 
 interface Route {
-    path: string;
-    element: React.ReactNode | React.ReactElement<RouteProps>;
-    children?: Route[];
+  path: string;
+  element: React.ReactNode | React.ReactElement<RouteProps>;
+  children?: Route[];
 }
 
 const router: Route[] = [
-    {
-        path: "/",
-        element: <MainLayout />,
-        children: [
-            {
-                path: "products/:categorySlug",
-                element: <Products key="ProductCategories" />,
-            },
-            {
-                path: "products/:categorySlug/:productId",
-                element: <ProductDetail key="ProductID" />,
-            },
-        ],
-    },
-
-    {
-        path: "/",
-        element: <DashboardLayout />,
-        children: [
-            {
-                path: "dashboard",
-                element: <Dashboard />,
-            },
-        ],
-    },
-    {
+  {
+    path: "/",
+    element: <MainLayout />,
+    children: [
+      {
+        path: "products/:categorySlug",
+        element: <Products key="ProductCategories" />,
+      },
+      {
+        path: "products/:categorySlug/:productId",
+        element: <ProductDetail key="ProductID" />,
+      },
+      {
+        path: "cart",
+        element: <Cart />,
+      },
+    ],
+  },
+  {
+    path: "/",
+    element: <DashboardLayout />,
+    children: [
+      {
         path: "profile",
         element: <Profile />,
-    },
-    {
-        path: "Cart",
-        element: <Cart />,
-    },
-    {
-        path: "/",
-        element: <GuestLayout />,
-        children: [
-            {
-                path: "auth",
-                element: <Auth />,
-            },
-        ],
-    },
-    {
-        path: "*",
-        element: <NotFound />,
-    },
+      },
+    ],
+  },
+  {
+    path: "/",
+    element: <GuestLayout />,
+    children: [
+      {
+        path: "/auth",
+        element: <Auth />,
+      },
+    ],
+  },
+  {
+    path: "*",
+    element: <NotFound />,
+  },
 ];
 
 const createdRouter = createBrowserRouter(router);

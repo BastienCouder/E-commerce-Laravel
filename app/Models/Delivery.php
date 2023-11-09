@@ -4,16 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Order extends Model
+class Delivery extends Model
 {
-    use HasFactory;
-
-    protected $fillable = [
-        'total_price',
-        'status',
-        'user_id',
-    ];
+    use HasFactory, SoftDeletes;
 
     public function user()
     {

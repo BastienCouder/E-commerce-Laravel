@@ -43,7 +43,7 @@ export default function Footer() {
                                     </li>
                                     <li className="mb-4">
                                         <Link
-                                            to="#"
+                                            to="/cart"
                                             className="hover:underline"
                                         >
                                             Mon panier
@@ -53,7 +53,9 @@ export default function Footer() {
                             </div>
                             <div>
                                 <h2 className="mb-6 text-sm font-semibold text-gray-900 uppercase">
-                                    Juridique
+                                    <Link to="#" className="hover:underline">
+                                        Mentions Légales
+                                    </Link>
                                 </h2>
                                 <ul className="text-gray-600">
                                     <li className="mb-4">
