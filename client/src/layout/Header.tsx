@@ -33,12 +33,12 @@ export default function Header() {
     },
     {
       title: "SKI DE RANDONNÉE",
-      slug: "ski-randonnees",
+      slug: "ski-de-randonnee",
       description: "Description de la catégorie Ski de Randonnée",
     },
     {
       title: "SKI DE FOND",
-      slug: "ski-fond",
+      slug: "ski-de-fond",
       description: "Description de la catégorie Ski de Fond",
     },
     {

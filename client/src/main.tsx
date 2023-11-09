@@ -2,21 +2,13 @@ import "./styles/index.css";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";
-import { applyMiddleware, createStore } from "redux";
-import thunk from "redux-thunk";
-import rootReducer from "@/store/reducer";
 import { RouterProvider } from "react-router-dom";
 import router from "./router.jsx";
 import { ContextProvider } from "./context/ContextProvider.tsx";
 
 // DevTools
-import { composeWithDevTools } from "redux-devtools-extension";
 import App from "./views/Home.tsx";
-
-const store = createStore(
-  rootReducer,
-  composeWithDevTools(applyMiddleware(thunk))
-);
+import { store } from "./@redux/store.ts";
 
 const rootElement = document.getElementById("root");
 

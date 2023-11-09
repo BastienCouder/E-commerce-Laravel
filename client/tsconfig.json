@@ -30,7 +30,7 @@
   },
   "include": [
     "src"
-  ],
+, "@redux"  ],
   "references": [
     {
       "path": "./tsconfig.node.json"

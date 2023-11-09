@@ -3,72 +3,100 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\Category;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    // Affiche la liste des produits
+
+    public function handleRequest(Request $request)
+    {
+        switch ($request->method()) {
+            case 'GET':
+                if ($request->route('product')) {
+                    return $this->show($request->route('product'));
+                } else {
+                    return $this->read();
+                }
+            case 'POST':
+                return $this->store($request);
+            case 'PUT':
+            case 'PATCH':
+                return $this->update($request, $request->route('product'));
+            case 'DELETE':
+                return $this->destroy($request->route('product'));
+            default:
+                return response(['message' => 'Invalid Request'], Response::HTTP_BAD_REQUEST);
+        }
+    }
+
     public function index()
     {
-        $products = Product::all();
-        return view('products.index', compact('products'));
+        $products = Product::with('category')->get();
+    return response()->json($products);
     }
-
-    // Affiche le formulaire de création de produit
+    
     public function create()
     {
-        return view('products.create');
+        return response()->json(['message' => 'Method not allowed for creation.'], Response::HTTP_METHOD_NOT_ALLOWED);
     }
-
-    // Stocke un nouveau produit dans la base de données
+    
     public function store(Request $request)
     {
-        // Valider les données du formulaire
         $request->validate([
             'title' => 'required|max:255',
             'price' => 'required|numeric',
             // ... d'autres règles de validation selon vos besoins
         ]);
-
-        // Créer un nouveau produit
-        Product::create($request->all());
-
-        return redirect()->route('products.index')->with('success', 'Produit créé avec succès.');
+    
+        $product = Product::create($request->all());
+    
+        return response()->json(['product' => $product, 'message' => 'Produit créé avec succès.'], Response::HTTP_CREATED);
     }
-
-    // Affiche les détails d'un produit spécifique
+    
     public function show(Product $product)
     {
-        return view('products.show', compact('product'));
+        return response()->json(['product' => $product], Response::HTTP_OK);
     }
-
-    // Affiche le formulaire de modification d'un produit
+    
     public function edit(Product $product)
     {
-        return view('products.edit', compact('product'));
+        return response()->json(['message' => 'Method not allowed for editing.'], Response::HTTP_METHOD_NOT_ALLOWED);
     }
-
-    // Met à jour les informations d'un produit dans la base de données
+    
     public function update(Request $request, Product $product)
     {
-        // Valider les données du formulaire
         $request->validate([
             'title' => 'required|max:255',
             'price' => 'required|numeric',
             // ... d'autres règles de validation selon vos besoins
         ]);
-
-        // Mettre à jour les informations du produit
+    
         $product->update($request->all());
-
-        return redirect()->route('products.index')->with('success', 'Produit mis à jour avec succès.');
+    
+        return response()->json(['product' => $product, 'message' => 'Produit mis à jour avec succès.'], Response::HTTP_OK);
     }
-
-    // Supprime un produit de la base de données
+    
     public function destroy(Product $product)
     {
         $product->delete();
+    
+        return response()->json(['message' => 'Produit supprimé avec succès.'], Response::HTTP_NO_CONTENT);
+    }    
 
-        return redirect()->route('products.index')->with('success', 'Produit supprimé avec succès.');
-    }
+    // public function checkCategoryProducts()
+    // {
+    //     $categoryId = 1; // Remplacez 1 par l'ID de la catégorie que vous souhaitez vérifier
+    //     $category = Category::find($categoryId);
+
+    //     // Vérifier si la catégorie existe
+    //     if ($category) {
+    //         // Afficher les produits liés à la catégorie
+    //         foreach ($category->products as $product) {
+    //             echo $product->title . '<br>';
+    //         }
+    //     } else {
+    //         echo "Catégorie non trouvée.";
+    //     }
+    // }
 }
