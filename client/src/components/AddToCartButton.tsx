@@ -4,29 +4,29 @@ import { useTransition } from "react";
 import { toast } from "sonner";
 
 interface AddToCartButtonProps {
-    selectedSize: null;
-    handleAddToCartClick(): any;
+  selectedSize: string | null;
+  handleAddToCartClick(): any;
 }
 
 export default function AddToCartButton({
-    selectedSize,
-    handleAddToCartClick,
+  selectedSize,
+  handleAddToCartClick,
 }: AddToCartButtonProps) {
-    const [isPending, startTransition] = useTransition();
+  const [isPending, startTransition] = useTransition();
 
-    return (
-        <>
-            <Button
-                aria-label="Ajouter au panier"
-                onClick={() => {
-                    startTransition(() => {
-                        handleAddToCartClick();
-                        toast.success("Produit ajouté avec succès");
-                    });
-                }}
-            >
-                Ajouter au panier
-            </Button>
-        </>
-    );
+  return (
+    <>
+      <Button
+        aria-label="Ajouter au panier"
+        onClick={() => {
+          startTransition(() => {
+            handleAddToCartClick();
+            toast.success("Produit ajouté avec succès");
+          });
+        }}
+      >
+        Ajouter au panier
+      </Button>
+    </>
+  );
 }

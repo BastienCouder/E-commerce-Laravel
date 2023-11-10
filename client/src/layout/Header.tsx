@@ -18,13 +18,15 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import { Separator } from "@/components/ui/separator";
+import { useStateContext } from "@/context/ContextProvider";
 import { cn } from "@/lib/utils";
 import { LogOut, User, UserCircle2 } from "lucide-react";
 import React from "react";
-import { AiOutlineUser } from "react-icons/ai";
 import { Link, useLocation } from "react-router-dom";
 
 export default function Header() {
+  const { user, token } = useStateContext();
+
   const components: { title: string; slug: string; description: string }[] = [
     {
       title: "SKI ALPIN",
@@ -146,11 +148,12 @@ export default function Header() {
                     <span> Profil</span>
                   </Link>
                 </DropdownMenuItem>
-
-                <DropdownMenuItem>
-                  <LogOut color="#25354c" className="mr-2 h-4 w-4" />
-                  <span>Deconnexion</span>
-                </DropdownMenuItem>
+                {user && token && (
+                  <DropdownMenuItem>
+                    <LogOut color="#25354c" className="mr-2 h-4 w-4" />
+                    <span>Deconnexion</span>
+                  </DropdownMenuItem>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
             <ShoppingCartButton />

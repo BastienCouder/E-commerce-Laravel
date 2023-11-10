@@ -6,10 +6,15 @@ export interface Product {
   shortDescription: string;
   longDescription: string;
   stock: number;
-  sizes?: string[];
+  sizes?: Size[];
 }
 
 export interface Category {
+  id: number;
+  name: string;
+}
+
+export interface Size {
   id: number;
   name: string;
 }

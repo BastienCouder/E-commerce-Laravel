@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\User;
 use App\Models\Cart;
 use App\Models\Product;
 use Illuminate\Database\Migrations\Migration;
@@ -18,7 +17,6 @@ return new class extends Migration
     {
         Schema::create('cart_items', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(User::class, 'user_id');
             $table->foreignIdFor(Cart::class, 'cart_id');
             $table->foreignIdFor(Product::class, 'product_id');
             $table->integer('quantity');

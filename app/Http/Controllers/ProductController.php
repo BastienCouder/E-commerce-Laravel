@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Http\Request;
-
+use Illuminate\Http\Response;
 class ProductController extends Controller
 {
 
@@ -30,7 +30,7 @@ class ProductController extends Controller
         }
     }
 
-    public function index()
+    public function read()
     {
         $products = Product::with('category')->get();
     return response()->json($products);
@@ -56,7 +56,7 @@ class ProductController extends Controller
     
     public function show(Product $product)
     {
-        return response()->json(['product' => $product], Response::HTTP_OK);
+        return response()->json($product, Response::HTTP_OK);
     }
     
     public function edit(Product $product)

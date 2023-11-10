@@ -2,28 +2,19 @@ import formatPrice, { formatDescription } from "@/lib/format";
 import { Product } from "@/types/Product";
 import { Link } from "react-router-dom";
 import { Skeleton } from "./ui/skeleton";
-import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 
 interface CardProductProps {
   categorySlug: string | undefined;
   product: Product;
+  isLoading: Boolean;
 }
 
 export default function CardProduct({
   product,
   categorySlug,
+  isLoading,
 }: CardProductProps) {
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, []);
-
   return (
     <div className="w-[300px] max-h-[600px] p-2">
       {isLoading ? (

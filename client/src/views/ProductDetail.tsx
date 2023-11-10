@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
-import formatPrice, { removeAccents } from "@/lib/format";
+import formatPrice from "@/lib/format";
 import AddToCartButton from "@/components/AddToCartButton";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -11,66 +11,59 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { useAppDispatch, useAppSelector } from "@/hook";
+import { readProduct } from "@/@redux/action/product.action";
+import ErrorPage from "@/error-page";
+import { RootState } from "@/@redux/reducer";
+import { Size } from "@/types/Product";
 import axiosClient from "@/lib/axios-client";
-import { Product } from "@/types/Product";
 
 export default function ProductDetail() {
-  const { categorySlug, productId } = useParams();
+  const { productId } = useParams<{ productId: string }>();
   const [isLoading, setIsLoading] = useState(true);
+  const dispatch = useAppDispatch();
+  let { product, loading, error } = useAppSelector(
+    (state: RootState) => state.product
+  );
 
-  const [products, setProducts] = useState<Product[]>([]);
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await axiosClient.get<Product[]>(`/products`);
-        setProducts(response.data);
-      } catch (error) {
-        console.error("Erreur lors de la récupération des produits:", error);
-      }
-    };
-
-    fetchProducts();
-  }, []);
-
-  let product = null;
-  if (productId) {
-    product = products.find(
-      (product) =>
-        product.category &&
-        removeAccents(
-          product.category.name.toLowerCase().replace(/\s+/g, "-")
-        ) === categorySlug?.toLowerCase() &&
-        product.id === parseInt(productId, 10)
-    );
+  if (error) {
+    return <ErrorPage />;
   }
 
-  const [selectedSize, setSelectedSize] = useState(null);
+  useEffect(() => {
+    if (productId && !loading && !error) {
+      dispatch(readProduct(productId));
+    }
+  }, [dispatch, productId]);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
+    if (product && !loading) {
       setIsLoading(false);
-    }, 1000);
+    }
+  }, [product]);
 
-    return () => clearTimeout(timer);
-  }, []);
-
-  const handleSizeClick = (size: any) => {
-    setSelectedSize(size);
+  const handleSizeClick = (size: Size) => {
+    setSelectedSize(size.name);
   };
 
-  const handleAddToCartClick = () => {
-    if (!selectedSize) {
-      // Aucune taille n'est sélectionnée, affiche une erreur
-      alert("Veuillez sélectionner une taille avant d'ajouter au panier");
-      return;
+  const handleAddToCartClick = async () => {
+    // if (selectedSize === null) {
+    //   // Aucune taille n'est sélectionnée, affiche une erreur
+    //   alert("Veuillez sélectionner une taille avant d'ajouter au panier");
+    //   return;
+    // }
+
+    try {
+      const response = await axiosClient.post("/cart", {
+        productId,
+      });
+      console.log(response.data);
+    } catch (error: any) {
+      console.error("Erreur lors de la requête POST :", error);
     }
   };
-
-  if (!product) {
-    setIsLoading(true);
-    return;
-  }
 
   return (
     <>
@@ -92,7 +85,7 @@ export default function ProductDetail() {
           {isLoading ? (
             <Skeleton className="w-1/2 h-8" />
           ) : (
-            <h1>{product.name}</h1>
+            <h1>{product?.name}</h1>
           )}
           <div className="space-y-2 w-3/4">
             {isLoading ? (
@@ -102,7 +95,7 @@ export default function ProductDetail() {
               </>
             ) : (
               <>
-                {product.stock && product.stock > 0 ? (
+                {product?.stock && product.stock > 0 ? (
                   <>
                     <div>
                       <p className="font-bold text-sm">Stock :</p>
@@ -117,30 +110,38 @@ export default function ProductDetail() {
             {isLoading ? (
               <Skeleton className="w-1/3 h-6" />
             ) : (
-              <p className="font-bold">{formatPrice(product.price, "EUR")}</p>
+              <>
+                {product && (
+                  <p className="font-bold">
+                    {formatPrice(product.price, "EUR")}
+                  </p>
+                )}
+              </>
             )}
             {isLoading ? (
               <Skeleton className="w-full h-8" />
             ) : (
-              <p>{product.shortDescription}</p>
+              <p>{product?.shortDescription}</p>
             )}
             {isLoading ? (
               <Skeleton className="w-full h-12" />
             ) : (
               <>
-                {product.sizes && product.sizes.length > 0 && (
+                {product?.sizes && product.sizes.length > 0 && (
                   <div className="space-y-1">
                     <p className="font-bold text-sm">Tailles :</p>
                     <ul className="flex gap-2">
-                      {product.sizes.map((size, index) => (
+                      {product?.sizes.map((size: Size, index: number) => (
                         <li
                           key={index}
                           className={`cursor-pointer flex justify-center items-center w-8 p-1 border ${
-                            selectedSize === size ? "bg-primary text-white" : ""
+                            selectedSize === size.name
+                              ? "bg-primary text-white"
+                              : ""
                           }`}
                           onClick={() => handleSizeClick(size)}
                         >
-                          {size}
+                          {size.name}
                         </li>
                       ))}
                     </ul>
@@ -166,7 +167,9 @@ export default function ProductDetail() {
               <Accordion type="single" collapsible>
                 <AccordionItem value="item-1">
                   <AccordionTrigger>Description</AccordionTrigger>
-                  <AccordionContent>{product.longDescription}</AccordionContent>
+                  <AccordionContent>
+                    {product?.longDescription}
+                  </AccordionContent>
                 </AccordionItem>
               </Accordion>
             </div>

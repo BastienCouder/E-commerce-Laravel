@@ -22,8 +22,7 @@ class ProductFactory extends Factory
     public function definition()
     {
         return [
-            'title' => $this->faker->word . ' Ski',
-            'slug' => $this->faker->slug,
+            'name' => $this->faker->word . ' Ski',
             'image' => $this->faker->imageUrl(),
             'category_id' => $this->faker->numberBetween(1, 6),
             'size_id' => $this->faker->numberBetween(1, 6),

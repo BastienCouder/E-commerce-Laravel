@@ -23,17 +23,3 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Routes pour les produits
-Route::resource('products', ProductController::class);
-
-// Routes pour les catégories
-Route::resource('categories', CategoryController::class);
-
-// Routes pour les paniers
-Route::resource('carts', CartController::class);
-
-// Routes pour les commandes
-Route::resource('orders', OrderController::class);
-
-// Routes pour les livraisons
-Route::resource('deliveries', DeliveryController::class);
