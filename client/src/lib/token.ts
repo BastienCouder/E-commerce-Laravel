@@ -1,3 +1,2 @@
 import Cookies from "js-cookie";
-
-export const authToken = Cookies.get("authToken");
+export const authToken: string | undefined = Cookies.get("authToken");

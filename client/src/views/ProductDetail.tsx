@@ -18,8 +18,11 @@ import { RootState } from "@/@redux/reducer";
 import { Size } from "@/types/Product";
 import axiosClient from "@/lib/axios-client";
 import { authToken } from "@/lib/token";
+import { useAuth } from "@/context/authContext";
+import Cookies from "js-cookie";
 
 export default function ProductDetail() {
+  const { state } = useAuth();
   const { productId } = useParams<{ productId: string }>();
   const [isLoading, setIsLoading] = useState(true);
   const dispatch = useAppDispatch();
@@ -57,18 +60,30 @@ export default function ProductDetail() {
     // }
 
     try {
-      const response = await axiosClient.post(
-        "/cart",
-        {
-          productId,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
+      const cartId = Cookies.get("cart_id");
+      console.log("Cart ID from cookie:", cartId);
+      if (state.user) {
+        await axiosClient.post(
+          "/cart",
+          {
+            productId,
           },
+          {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          }
+        );
+      } else {
+        const response = await axiosClient.post("/cart/public", {
+          productId,
+          cartId,
+        });
+        if (!cartId) {
+          const newCartId = response.data.cart?.id;
+          Cookies.set("cart_id", newCartId, { expires: 30 });
         }
-      );
-      console.log(response.data);
+      }
     } catch (error: any) {
       console.error("Erreur lors de la requête POST :", error);
     }

@@ -29,12 +29,13 @@ Route::group(['prefix' => 'products'], function () {
 });
 
 Route::group(['prefix' => 'cart'], function () {
+    
     // Ces routes nécessitent l'authentification
     Route::middleware(['auth:sanctum'])->group(function () {
+        Route::post('/merge-cart', 'CartController@mergeCart');
         Route::get('/', [CartController::class, 'read']);
         Route::post('/', [CartController::class, 'create']);
-        Route::put('/{cart}', [CartController::class, 'update']);
-        Route::patch('/{cart}', [CartController::class, 'update']);
+        Route::put('/update-quantity/{cartItemId}',  [CartController::class, 'update']);
         Route::delete('/{cart}', [CartController::class, 'destroy']);
     });
     // Ces routes sont accessibles sans authentification

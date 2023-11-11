@@ -4,6 +4,7 @@ export interface Cart {
   status: string;
   user_id?: number;
   cartItems: CartItem[];
+  cart: Cart;
 }
 
 // CartItem.ts
@@ -15,7 +16,5 @@ export interface CartItem {
   user_id?: number;
   cart_id?: number;
   product_id: number;
-
-  // ...
   product: Product;
 }

@@ -42,6 +42,7 @@ import { useDispatch } from "react-redux";
 import { useAppSelector } from "@/hook";
 import { RootState } from "@/@redux/store";
 import { login, register } from "@/@redux/action/auth.action";
+import Cookies from "js-cookie";
 
 export default function Auth() {
   const dispatch = useDispatch();
@@ -83,6 +84,16 @@ export default function Auth() {
       dispatch(login(payload));
 
       if (!loading && !error) {
+        const cartId = Cookies.get("cart_id");
+        axiosClient
+          .post("/cart/merge-cart", { cartId })
+          .then((response) => {
+            console.log(response.data.message);
+          })
+          .catch((error) => {
+            console.error("Erreur lors de la fusion des paniers :", error);
+          });
+
         setIsErrorCheckbox("");
         setCheckboxChecked(false);
         console.log("success");

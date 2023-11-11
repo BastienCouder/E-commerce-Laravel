@@ -24,5 +24,15 @@ class Cart extends Model
     {
         return $this->hasMany(CartItem::class);
     }
+
+    public function toArray()
+    {
+        $array = parent::toArray();
+        $array['id'] = $this->id;
+
+        // Ajoutez d'autres attributs si nécessaire
+
+        return $array;
+    }
     
 }

@@ -1,5 +1,5 @@
 import { Dispatch } from "redux";
-import { Auth, User } from "@/types/User";
+import { Auth } from "@/types/User";
 import axios, { AxiosRequestConfig } from "axios";
 import Cookies from "js-cookie";
 
