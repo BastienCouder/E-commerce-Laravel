@@ -1,6 +1,7 @@
 import { Dispatch } from "redux";
-import axiosClient from "@/lib/axios-client";
 import { Auth, User } from "@/types/User";
+import axios, { AxiosRequestConfig } from "axios";
+import Cookies from "js-cookie";
 
 // Types
 interface AuthUser {
@@ -28,25 +29,28 @@ interface AuthAction<T = void> {
   error?: string;
 }
 
-// Action Creators
+const config: AxiosRequestConfig = {
+  withCredentials: true,
+  headers: {
+    "Content-Type": "application/json",
+    // Authorization: `Bearer ${token}`,
+  },
+};
 const createAuthAction =
-  <T>(
-    type: string,
-    url: string,
-    userData: Auth,
-    setUser: (user: any) => void,
-    setToken: (token: string) => void
-  ): any =>
+  <T>(type: string, url: string, userData: Auth): any =>
   async (dispatch: Dispatch<AuthAction<T>>) => {
     dispatch({ type });
 
     try {
-      const response = await axiosClient.post(url, userData);
+      const response = await axios.post(url, userData, config);
+      const token = response.data.message;
+
+      // Stockez le token dans un cookie
+      Cookies.set("authToken", token);
 
       if (response.data) {
-        setUser(response.data.user);
-        setToken(response.data.token);
         dispatch({ type: `${type}_SUCCESS`, payload: response.data });
+        window.location.reload();
       } else {
         console.error(
           `Response from ${url} does not contain expected data property:`,
@@ -66,41 +70,28 @@ const createAuthAction =
       throw error;
     }
   };
-
 // Actions
-export const register = (
-  userData: Auth,
-  setUser: (user: User) => void,
-  setToken: (token: string) => void
-) =>
+export const register = (userData: Auth) =>
   createAuthAction<AuthUser>(
     REGISTER_REQUEST,
-    "/register",
-    userData,
-    setUser,
-    setToken
+    `${import.meta.env.VITE_API_URL}/api/register`,
+    userData
   );
 
-export const login = (
-  userData: Auth,
-  setUser: (user: User) => void,
-  setToken: (token: string) => void
-) =>
+export const login = (userData: Auth) =>
   createAuthAction<AuthUser>(
     LOGIN_REQUEST,
-    "/login",
-    userData,
-    setUser,
-    setToken
+    `${import.meta.env.VITE_API_URL}/api/login`,
+    userData
   );
 
 export const logout = (): any => {
   return async (dispatch: Dispatch<AuthAction>) => {
     try {
       dispatch({ type: LOGOUT_REQUEST });
-      // Ajoutez ici toute logique de déconnexion nécessaire, comme la suppression du token, etc.
-      // Exemple : localStorage.removeItem('token');
+      Cookies.remove("authToken");
       dispatch({ type: LOGOUT_SUCCESS });
+      window.location.reload();
     } catch (error: any) {
       dispatch({ type: LOGOUT_FAILURE, error: error.message });
     }

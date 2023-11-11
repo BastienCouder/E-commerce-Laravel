@@ -37,15 +37,14 @@ import { useNavigate } from "react-router-dom";
 
 import { AiOutlineGoogle } from "react-icons/ai";
 import axiosClient from "@/lib/axios-client";
-import { useStateContext } from "@/context/ContextProvider";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { useAppSelector } from "@/hook";
 import { RootState } from "@/@redux/store";
 import { login, register } from "@/@redux/action/auth.action";
+
 export default function Auth() {
   const dispatch = useDispatch();
-  const { setUser, setToken } = useStateContext();
   const navigate = useNavigate();
   const { loading, error } = useAppSelector((state: RootState) => state.auth);
   const [checkboxChecked, setCheckboxChecked] = useState(false);
@@ -71,21 +70,22 @@ export default function Auth() {
 
   const onLogin = useCallback(async () => {
     try {
-      if (!checkboxChecked) {
-        setIsErrorCheckbox("Veuillez accepter les termes et conditions");
-        return;
-      }
+      // if (!checkboxChecked) {
+      //   setIsErrorCheckbox("Veuillez accepter les termes et conditions");
+      //   return;
+      // }
 
       const payload = {
         email: form.getValues("email")?.toString(),
         password: form.getValues("password")?.toString(),
       };
 
-      dispatch(login(payload, setUser, setToken));
+      dispatch(login(payload));
 
       if (!loading && !error) {
         setIsErrorCheckbox("");
         setCheckboxChecked(false);
+        console.log("success");
         navigate("/");
       }
     } catch (error) {
@@ -107,7 +107,7 @@ export default function Auth() {
         return;
       }
 
-      dispatch(register(payload, setUser, setToken));
+      dispatch(register(payload));
       setIsErrorCheckbox("");
       setCheckboxChecked(!checkboxChecked);
       onLogin();
@@ -124,7 +124,7 @@ export default function Auth() {
         );
       }
     }
-  }, [form, dispatch, checkboxChecked, setUser, setToken, setIsError, onLogin]);
+  }, [form, dispatch, checkboxChecked, setIsError, onLogin]);
 
   const handleClickCheckbox = useCallback(() => {
     setCheckboxChecked(!checkboxChecked);

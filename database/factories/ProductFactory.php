@@ -32,9 +32,6 @@ class ProductFactory extends Factory
             'longDescription' => $this->faker->paragraph,
             'price' => $this->faker->randomFloat(2, 50, 500),
             'stock' => $this->faker->randomNumber(2),
-            'created_by' => null, // Modifier si nécessaire
-            'updated_by' => null, // Modifier si nécessaire
-            'deleted_by' => null, // Modifier si nécessaire
         ];
     }
 }

@@ -16,9 +16,9 @@ class CartController extends Controller
     {
         switch ($request->method()) {
             case 'GET':
-                return $this->read();
+                return Auth::check() ? $this->read() : $this->publicRead();
             case 'POST':
-                return $this->create($request);
+                return Auth::check() ? $this->create($request) : $this->publicCreate($request);
             case 'PUT':
             case 'PATCH':
                 return $this->update($request, $request->route('cart'));
@@ -45,16 +45,21 @@ class CartController extends Controller
     public function create(Request $request)
     {
         try {
-            // Récupérer les données de la requête
+            error_log("create");
+            // Validation des données de la requête
+            $request->validate([
+                'productId' => 'required|exists:products,id',
+            ]);
+            
             $productId = $request->input('productId');
+            error_log("Requested Product ID: " . $productId);
+            $user = Auth::user();
+            error_log("User ID: " . ($user ? $user->id : "Guest"));
     
-            $user = null;
             // Vérifier si l'utilisateur est authentifié
-            if (Auth::check()) {
-                $user = Auth::user();
+            if ($user && Auth::check()) {
                 $cart = $user->cart;
-    
-                // Si l'utilisateur n'a pas de panier, créez-en un
+            
                 if (!$cart) {
                     $cart = new Cart();
                     $cart->total_price = 0;
@@ -62,59 +67,133 @@ class CartController extends Controller
                     $cart->user()->associate($user);
                     $cart->save();
                 }
-            } else {
-                // Utilisateur non authentifié, obtient le panier depuis la session
-                $cart = session('cart', []);
-    
-                // Si l'utilisateur n'a pas encore de panier, créez-en un
-                if (empty($cart)) {
-                    $cart = new Cart();
-                    $cart->total_price = 0;
-                    $cart->status = 'active';
-                    $cart->save();
-                    session(['cart' => $cart]);
-                }
+            
+                error_log("Cart ID: " . $cart->id);
             }
+            else {
+                    // L'utilisateur n'est pas authentifié, utilisez la session pour le panier
+                    $cart = session('cart', []);
+                
+                    if (empty($cart)) {
+                        $cart = new Cart();
+                        $cart->total_price = 0;
+                        $cart->status = 'active';
+                        $cart->save();
+                
+                        // Stockez l'ID du panier dans la session
+                        session(['cart' => ['id' => $cart->id]]);
+                    }
+                
+                    // Vous pouvez accéder à l'ID du panier de la session de cette manière (à des fins de journalisation par exemple)
+                }
+                error_log("Cart ID: " . ($cart['id'] ?? "N/A"));
+                
     
-            // Trouver le produit par ID
             $product = Product::find($productId);
     
-            // Vérifier si le produit existe
             if ($product) {
-                // Affichez les informations de débogage
-                error_log("User ID: " . ($user ? $user->id : "Guest"));
-                error_log("Cart ID: " . $cart->id);
-                error_log("Product ID: " . $product->id);
-    
-                // Vérifiez si le produit est déjà dans le panier
                 $existingCartItem = $cart->cartItems()->where('product_id', $productId)->first();
                 error_log("Existing Cart Item: " . json_encode($existingCartItem));
     
                 if ($existingCartItem) {
-                    // Le produit existe déjà dans le panier, augmentez simplement la quantité
-                    $existingCartItem->quantity += 1; // Augmenter la quantité de 1
+                    $existingCartItem->quantity += 1;
                     $existingCartItem->save();
                 } else {
-                    // Le produit n'existe pas encore dans le panier, créez un nouvel élément CartItem avec la quantité fixée à 1
                     $cartItem = new CartItem(['quantity' => 1]);
                     $cartItem->cart()->associate($cart);
                     $cartItem->product()->associate($product);
                     $cartItem->save();
+                    error_log("Cart Item: " . json_encode($cartItem));
                 }
     
-                // Mettez à jour le total_price du panier
-                $cart->total_price += $product->price; // Ajouter le prix du produit au total_price
+                $cart->total_price += $product->price;
                 $cart->save();
-    
-                // Retourne le panier sous forme de JSON avec les nouveaux détails du panier
-                return response()->json(['cart' => $cart, 'cartItems' => $cart->cartItems]);
-            } else {
-                return response()->json(['message' => 'Produit non trouvé'], Response::HTTP_NOT_FOUND);
+
+
             }
+
         } catch (\Exception $e) {
             // Gérer l'exception si elle se produit
             error_log($e->getMessage());
+            error_log("Exception Trace: " . $e->getTraceAsString());
             return response()->json(['message' => 'Une erreur s\'est produite'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+    
+
+
+    // public function create(Request $request)
+    // {
+    //     try {
+    //         // Validation des données de la requête
+    //         $request->validate([
+    //             'productId' => 'required|exists:products,id',
+    //         ]);
+    
+    //         // Récupérer le produit à partir de l'ID
+    //         $productId = $request->input('productId');
+    //         $product = Product::find($productId);
+    
+    //         // Vérifier si le produit existe et est actif
+    //         if (!$product) {
+    //             return response()->json(['message' => 'Produit non trouvé ou non disponible'], Response::HTTP_NOT_FOUND);
+    //         }
+    
+    //         // Récupérer l'utilisateur authentifié
+    //         $user = Auth::user();
+    
+    //         // Initialiser le panier
+    //         if ($user) {
+    //             $cart = $user->cart;
+    
+    //             if (!$cart) {
+    //                 $cart = new Cart();
+    //                 $cart->total_price = 0;
+    //                 $cart->status = 'active';
+    //                 $cart->user()->associate($user);
+    //                 $cart->save();
+    //             }
+    //         } else {
+    //             $cart = session('cart', []);
+    
+    //             if (empty($cart)) {
+    //                 $cart = new Cart();
+    //                 $cart->total_price = 0;
+    //                 $cart->status = 'active';
+    //                 $cart->save();
+    //                 session(['cart' => $cart]);
+    //             }
+    //         }
+    
+    //         // Vérifier si le produit est déjà dans le panier
+    //         $existingCartItem = $cart->cartItems()->where('product_id', $productId)->first();
+    
+    //         if ($existingCartItem) {
+    //             $existingCartItem->quantity += 1;
+    //             $existingCartItem->save();
+    //         } else {
+    //             $cartItem = new CartItem(['quantity' => 1]);
+    //             $cartItem->product()->associate($product);
+    //             $cart->cartItems()->save($cartItem);
+    //         }
+    
+    //         // Mettre à jour le prix total du panier
+    //         $cart->total_price += $product->price;
+    //         $cart->save();
+    
+    //         // Nettoyer le panier de la session si l'utilisateur est authentifié
+    //         if (Auth::check()) {
+    //             session(['cart' => []]);
+    //         }
+    
+    //         return response()->json([
+    //             'success' => true,
+    //             'cart' => $cart,
+    //             'cartItems' => $cart->cartItems,
+    //         ]);
+    //     } catch (\Exception $e) {
+    //         error_log($e->getMessage());
+    //         return response()->json(['message' => 'Une erreur s\'est produite'], Response::HTTP_INTERNAL_SERVER_ERROR);
+    //     }
+    // }
 }

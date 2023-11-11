@@ -15,20 +15,20 @@ return [
     |
     */
 
-    'paths' => ['api/*', 'sanctum/csrf-cookie', 'login/google*', 'login/google/callback*'],
+    'paths' => ['api/*', 'sanctum/csrf-cookie'],
     
-    'allowed_methods' => ['*'],
+    'allowed_methods' => ['POST, GET, OPTIONS, PUT, DELETE'],
 
-    'allowed_origins' => ['*'],
+    'allowed_origins' => ['http://localhost:5173'],
 
     'allowed_origins_patterns' => [],
 
-    'allowed_headers' => ['*'],
+    'allowed_headers' => ['X-Requested-With, Content-Type, Authorization'],
 
     'exposed_headers' => [],
 
     'max_age' => 0,
 
-    'supports_credentials' => false,
+    'supports_credentials' => true,
 
 ];

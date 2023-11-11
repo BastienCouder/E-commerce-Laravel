@@ -17,6 +17,7 @@ import ErrorPage from "@/error-page";
 import { RootState } from "@/@redux/reducer";
 import { Size } from "@/types/Product";
 import axiosClient from "@/lib/axios-client";
+import { authToken } from "@/lib/token";
 
 export default function ProductDetail() {
   const { productId } = useParams<{ productId: string }>();
@@ -56,9 +57,17 @@ export default function ProductDetail() {
     // }
 
     try {
-      const response = await axiosClient.post("/cart", {
-        productId,
-      });
+      const response = await axiosClient.post(
+        "/cart",
+        {
+          productId,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        }
+      );
       console.log(response.data);
     } catch (error: any) {
       console.error("Erreur lors de la requête POST :", error);

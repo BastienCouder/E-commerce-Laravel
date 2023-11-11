@@ -4,11 +4,11 @@ import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";
 import { RouterProvider } from "react-router-dom";
 import router from "./router.jsx";
-import { ContextProvider } from "./context/ContextProvider.tsx";
 
 // DevTools
 import App from "./views/Home.tsx";
 import { store } from "./@redux/store.ts";
+import { AuthProvider } from "./context/authContext.tsx";
 
 const rootElement = document.getElementById("root");
 
@@ -17,10 +17,10 @@ if (rootElement) {
   root.render(
     <React.StrictMode>
       <Provider store={store}>
-        <ContextProvider>
+        <AuthProvider>
           <RouterProvider router={router} />
           <App />
-        </ContextProvider>
+        </AuthProvider>
       </Provider>
     </React.StrictMode>
   );

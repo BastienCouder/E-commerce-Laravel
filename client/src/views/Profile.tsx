@@ -1,7 +1,22 @@
-export default function Profile() {
-    return (
+import { useAuth } from "@/context/authContext";
+
+const Profile: React.FC = () => {
+  const { state } = useAuth();
+  return (
+    <div>
+      {state.user ? (
         <div>
-            <h1>Profile</h1>
+          <p>Welcome, {state.user.name}!</p>
+          {/* Ajoutez ici le contenu pour un utilisateur authentifié */}
         </div>
-    );
-}
+      ) : (
+        <div>
+          <p>Not authenticated</p>
+          {/* Ajoutez ici le contenu pour un utilisateur non authentifié */}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Profile;
