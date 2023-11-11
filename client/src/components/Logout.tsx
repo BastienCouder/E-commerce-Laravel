@@ -1,27 +1,29 @@
-import { BiLogOut } from "react-icons/bi";
-import { Button } from "./ui/button";
+import { logout } from "@/@redux/action/auth.action";
 import { useStateContext } from "@/context/ContextProvider";
-import axiosClient from "@/lib/axios-client";
+import { useAppDispatch } from "@/hook";
+import { useNavigate } from "react-router-dom";
 
 export default function Logout() {
   const { setUser, setToken } = useStateContext();
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
-  const logout = (e: any) => {
+  const onLogout = async (e: any) => {
     e.preventDefault();
 
-    axiosClient.post("/logout").then(() => {
+    try {
+      dispatch(logout());
       setUser({});
       setToken(null);
-    });
+    } catch (error: any) {
+      console.error(error.response.data);
+    }
+    navigate("/");
   };
 
   return (
-    <Button
-      onClick={logout}
-      className="flex items-center w-full me-4 ps-4 lg:pe-16 sm:pe-5 py-3 rounded-2xl hover:bg-blackHover"
-    >
-      <BiLogOut />
-      <span className="ms-4 text-base sm:block hidden">Deconnexion</span>
-    </Button>
+    <span onClick={onLogout} className="capitalize cursor-pointer text-sm">
+      deconnexion
+    </span>
   );
 }

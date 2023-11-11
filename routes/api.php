@@ -44,6 +44,11 @@ Route::group(['prefix' => 'cart'], function () {
     Route::delete('/{cart}', [CartController::class, 'destroy']);
 });
 
-Route::post('/register', [AuthController::Class, 'register']);
-Route::post('/login', [AuthController::Class, 'login']);
-Route::post('/logout', [AuthController::Class, 'logout']);
+Route::get('/login/google', 'GoogleController@redirectToProvider')->name('google.login');
+Route::get('/login/google/callback', 'GoogleController@handleProviderCallback');
+
+// Route::get('/login/google', [AuthController::class, 'redirectToGoogle']);
+// Route::get('/login/google/callback', [AuthController::class, 'handleGoogleCallback']);
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register']);
+Route::middleware('auth:api')->post('/logout', [AuthController::class, 'logout']);

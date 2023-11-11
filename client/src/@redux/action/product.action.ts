@@ -39,8 +39,13 @@ export const readProductError = (payload: string): ReadProductErrorAction => ({
   payload,
 });
 
+export type ProductAction =
+  | ReadProductRequestAction
+  | ReadProductSuccessAction
+  | ReadProductErrorAction;
+
 // Async action creator function
-export const readProduct = (productId: string) => {
+export const readProduct = (productId: string): any => {
   return async (dispatch: Dispatch) => {
     try {
       dispatch(readProductRequest());

@@ -1,6 +1,8 @@
 import { Dispatch } from "redux";
 import axiosClient from "@/lib/axios-client";
 import { Product } from "@/types/Product";
+import { RootState } from "../store";
+import { ThunkAction } from "redux-thunk";
 
 // Action type constants
 export const READ_ALL_PRODUCTS_REQUEST = "READ_ALL_PRODUCTS_REQUEST";
@@ -41,8 +43,14 @@ export const readAllProductsError = (
   error,
 });
 
+// Union type for all product actions
+export type ProductsAction =
+  | ReadAllProductsRequestAction
+  | ReadAllProductsSuccessAction
+  | ReadAllProductsErrorAction;
+
 // Async action creator function
-export const readAllProducts = () => {
+export const readAllProducts = (): any => {
   return async (dispatch: Dispatch) => {
     try {
       dispatch(readAllProductsRequest());

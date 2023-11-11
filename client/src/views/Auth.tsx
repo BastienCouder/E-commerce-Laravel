@@ -39,14 +39,19 @@ import { AiOutlineGoogle } from "react-icons/ai";
 import axiosClient from "@/lib/axios-client";
 import { useStateContext } from "@/context/ContextProvider";
 import axios from "axios";
-
+import { useDispatch } from "react-redux";
+import { useAppSelector } from "@/hook";
+import { RootState } from "@/@redux/store";
+import { login, register } from "@/@redux/action/auth.action";
 export default function Auth() {
+  const dispatch = useDispatch();
   const { setUser, setToken } = useStateContext();
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
+  const { loading, error } = useAppSelector((state: RootState) => state.auth);
   const [checkboxChecked, setCheckboxChecked] = useState(false);
   const [variant, setVariant] = useState("login");
-  const [error, setError] = useState("");
-  const [errorCheckbox, setErrorCheckbox] = useState("");
+  const [errorCheckbox, setIsErrorCheckbox] = useState("");
+  const [isError, setIsError] = useState("");
 
   const formResolver =
     variant === "login"
@@ -64,103 +69,103 @@ export default function Auth() {
     );
   }, []);
 
-  const login = useCallback(async () => {
+  const onLogin = useCallback(async () => {
     try {
       if (!checkboxChecked) {
-        setErrorCheckbox("Vous devez accepter les termes et conditions.");
+        setIsErrorCheckbox("Veuillez accepter les termes et conditions");
         return;
-      } else {
-        setErrorCheckbox("");
       }
 
-      const formData = new FormData();
-      const email = form.getValues("email");
-      const password = form.getValues("password");
+      const payload = {
+        email: form.getValues("email")?.toString(),
+        password: form.getValues("password")?.toString(),
+      };
 
-      // const response = await axios.post(
-      //     `${env.API_URL}`,
-      //     {
-      //         email,
-      //         password,
-      //     },
-      //     { withCredentials: true }
-      // );
-      // console.log(response);
-      // navigate("/");
+      dispatch(login(payload, setUser, setToken));
+
+      if (!loading && !error) {
+        setIsErrorCheckbox("");
+        setCheckboxChecked(false);
+        navigate("/");
+      }
     } catch (error) {
-      setError("Une erreur s'est produite lors de la connexion : " + error);
+      console.error("Une erreur s'est produite lors de la connexion :", error);
       throw error;
     }
-  }, [form, checkboxChecked]);
+  }, [dispatch, form, loading, error, setIsErrorCheckbox, setCheckboxChecked]);
 
-  const register = useCallback(async () => {
+  const onRegister = useCallback(async () => {
     const payload = {
       name: form.getValues("name")?.toString(),
       email: form.getValues("email")?.toString(),
       password: form.getValues("password")?.toString(),
     };
-    try {
-      // if (!checkboxChecked) {
-      //   setErrorCheckbox("Vous devez accepter les termes et conditions.");
-      //   return;
-      // } else {
-      const { data } = await axiosClient.post("/register", payload);
 
-      setUser(data.user);
-      setToken(data.token);
-      setErrorCheckbox("");
+    try {
+      if (!checkboxChecked) {
+        setIsErrorCheckbox("Veuillez accepter les termes et conditions");
+        return;
+      }
+
+      dispatch(register(payload, setUser, setToken));
+      setIsErrorCheckbox("");
       setCheckboxChecked(!checkboxChecked);
-      login();
+      onLogin();
     } catch (error) {
       if (axios.isAxiosError(error)) {
         const response = error.response;
         if (response && response.status === 422) {
-          setError(response.data.errors);
+          setIsError(response.data.errors);
         }
       } else if (error instanceof Error) {
-        setError(
+        setIsError(
           "Une erreur s'est produite lors de l'enregistrement : " +
             error.message
         );
       }
     }
-  }, [
-    form,
-    login,
-    checkboxChecked,
-    setUser,
-    setToken,
-    setCheckboxChecked,
-    setError,
-  ]);
+  }, [form, dispatch, checkboxChecked, setUser, setToken, setIsError, onLogin]);
+
   const handleClickCheckbox = useCallback(() => {
     setCheckboxChecked(!checkboxChecked);
   }, [checkboxChecked]);
 
+  const handleGoogleLogin = async () => {
+    try {
+      const response = await axiosClient.get("/login/google");
+      window.location.href = response.data;
+    } catch (error) {
+      console.error("Erreur lors de la connexion avec Google :", error);
+    }
+  };
+
   return (
     <>
       <div className="w-full h-full my-12 flex flex-col justify-center items-center space-y-2">
-        <h2 className="text-2xl text-primary">
+        <h2 className="text-2xl text-primary mb-2">
           {variant === "login" ? "Se connecter" : "S'inscrire"}
         </h2>
+        <div className="px-4 w-full md:w-1/2 xl:w-1/3 py-2">
+          <Button
+            onClick={handleGoogleLogin}
+            aria-label="connexion ou insription"
+            className="w-full h-12 flex gap-x-4 items-center"
+          >
+            <AiOutlineGoogle size={20} />
+            Google
+          </Button>
+        </div>
         <div className="w-full md:w-1/2 xl:w-1/3 p-4 flex flex-col items-center">
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(() =>
-                variant === "login" ? login() : register()
+                variant === "login" ? onLogin() : onRegister()
               )}
               className="w-full flex flex-col justify-center items-center space-y-2"
             >
-              {error ? <small className="text-red-500">{error}</small> : null}
-              <div className="w-full py-2">
-                <Button
-                  aria-label="connexion ou insription"
-                  className="w-full h-12 flex gap-x-4 items-center"
-                >
-                  <AiOutlineGoogle size={20} />
-                  Google
-                </Button>
-              </div>
+              {isError ? (
+                <small className="text-red-500">{isError}</small>
+              ) : null}
               <div className="w-full flex items-center">
                 <div className="w-1/2 h-px bg-primary"></div>
                 <p className="px-8 flex justify-center items-center">Ou</p>
@@ -229,10 +234,7 @@ export default function Auth() {
               />
               <div className="w-full items-top flexflex-col">
                 <div className="flex  gap-x-2">
-                  <Checkbox
-                    id="terms1"
-                    // onClick={handleClickCheckbox}
-                  />
+                  <Checkbox id="terms1" onClick={handleClickCheckbox} />
                   <div className="grid gap-1.5 leading-none">
                     <label
                       htmlFor="terms1"
@@ -253,7 +255,7 @@ export default function Auth() {
               <div className="w-full py-4">
                 <Button
                   aria-label="connexion ou insription"
-                  onClick={variant === "login" ? login : register}
+                  onClick={variant === "login" ? onLogin : onRegister}
                   className="w-full"
                 >
                   {variant === "login"

@@ -1,3 +1,4 @@
+import Logout from "@/components/Logout";
 import Search from "@/components/Search";
 import ShoppingCartButton from "@/components/ShoppingCartButton";
 import {
@@ -76,9 +77,11 @@ export default function Header() {
           <NavigationMenu>
             <NavigationMenuList>
               <NavigationMenuItem>
-                <Link to="/" className="font-semibold mx-6">
-                  <NavigationMenuLink>Accueil</NavigationMenuLink>
-                </Link>
+                <NavigationMenuLink asChild>
+                  <Link className="font-semibold mx-6" to="/">
+                    Accueil
+                  </Link>
+                </NavigationMenuLink>
               </NavigationMenuItem>
               <NavigationMenuItem>
                 <NavigationMenuTrigger>Getting started</NavigationMenuTrigger>
@@ -86,9 +89,9 @@ export default function Header() {
                   <ul className="grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
                     <li className="row-span-3">
                       <NavigationMenuLink asChild>
-                        <a
+                        <Link
                           className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
-                          href="/"
+                          to="/"
                         >
                           <div className="mb-2 mt-4 text-lg font-medium">
                             shadcn/ui
@@ -97,18 +100,18 @@ export default function Header() {
                             Beautifully designed components built with Radix UI
                             and Tailwind CSS.
                           </p>
-                        </a>
+                        </Link>
                       </NavigationMenuLink>
                     </li>
-                    <ListItem href="/docs" title="Introduction">
+                    <ListItem to="/docs" title="Introduction">
                       Re-usable components built using Radix UI and Tailwind
                       CSS.
                     </ListItem>
-                    <ListItem href="/docs/installation" title="Installation">
+                    <ListItem to="/docs/installation" title="Installation">
                       How to install dependencies and structure your app.
                     </ListItem>
                     <ListItem
-                      href="/docs/primitives/typography"
+                      to="/docs/primitives/typography"
                       title="Typography"
                     >
                       Styles for headings, paragraphs, lists...etc
@@ -124,7 +127,7 @@ export default function Header() {
                       <ListItem
                         key={component.slug}
                         title={component.title}
-                        href={`/products/${component.slug}`}
+                        to={`/products/${component.slug}`}
                       >
                         {component.description}
                       </ListItem>
@@ -150,8 +153,10 @@ export default function Header() {
                 </DropdownMenuItem>
                 {user && token && (
                   <DropdownMenuItem>
-                    <LogOut color="#25354c" className="mr-2 h-4 w-4" />
-                    <span>Deconnexion</span>
+                    <div className="font-semibold flex cursor-pointer">
+                      <LogOut color="#25354c" className="mr-2 h-4 w-4" />
+                    </div>
+                    <Logout />
                   </DropdownMenuItem>
                 )}
               </DropdownMenuContent>
@@ -167,12 +172,12 @@ export default function Header() {
 
 const ListItem = React.forwardRef<
   React.ElementRef<"a">,
-  React.ComponentPropsWithoutRef<"a">
+  React.ComponentPropsWithoutRef<"a"> & { to: string }
 >(({ className, title, children, ...props }, ref) => {
   return (
     <li>
       <NavigationMenuLink asChild>
-        <a
+        <Link
           ref={ref}
           className={cn(
             "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
@@ -184,7 +189,7 @@ const ListItem = React.forwardRef<
           <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
             {children}
           </p>
-        </a>
+        </Link>
       </NavigationMenuLink>
     </li>
   );
