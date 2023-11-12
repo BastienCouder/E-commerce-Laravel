@@ -3,6 +3,12 @@ import {
   READ_CART_REQUEST,
   READ_CART_SUCCESS,
   READ_CART_ERROR,
+  UPDATE_QUANTITY_REQUEST,
+  UPDATE_QUANTITY_SUCCESS,
+  UPDATE_QUANTITY_ERROR,
+  DELETE_CART_ITEM_ERROR,
+  DELETE_CART_ITEM_REQUEST,
+  DELETE_CART_ITEM_SUCCESS,
 } from "../action/cart.action";
 
 // Type de l'état initial
@@ -13,27 +19,57 @@ export interface cartState {
 }
 
 // Type d'action
-interface ReadcartRequestAction {
+interface ReadCartRequestAction {
   type: typeof READ_CART_REQUEST;
 }
 
-interface ReadcartSuccessAction {
+interface ReadCartSuccessAction {
   type: typeof READ_CART_SUCCESS;
   payload: Cart;
 }
 
-interface ReadcartErrorAction {
+interface ReadCartErrorAction {
   type: typeof READ_CART_ERROR;
   payload: string;
 }
 
-export type cartAction =
-  | ReadcartRequestAction
-  | ReadcartSuccessAction
-  | ReadcartErrorAction
+interface UpdateQuantityRequestAction {
+  type: typeof UPDATE_QUANTITY_REQUEST;
+}
+
+interface UpdateQuantitySuccessAction {
+  type: typeof UPDATE_QUANTITY_SUCCESS;
+  payload: Cart;
+}
+
+interface UpdateQuantityErrorAction {
+  type: typeof UPDATE_QUANTITY_ERROR;
+  payload: string;
+}
+interface DeleteCartItemRequestAction {
+  type: typeof DELETE_CART_ITEM_REQUEST;
+}
+
+interface DeleteCartItemSuccessAction {
+  type: typeof DELETE_CART_ITEM_SUCCESS;
+  payload: Cart;
+}
+
+interface DeleteCartItemErrorAction {
+  type: typeof DELETE_CART_ITEM_ERROR;
+  payload: string;
+}
+
+export type CartAction =
+  | ReadCartRequestAction
+  | ReadCartSuccessAction
+  | ReadCartErrorAction
   | UpdateQuantityRequestAction
   | UpdateQuantitySuccessAction
-  | UpdateQuantityErrorAction;
+  | UpdateQuantityErrorAction
+  | DeleteCartItemRequestAction
+  | DeleteCartItemSuccessAction
+  | DeleteCartItemErrorAction;
 
 // État initial
 const initialState: cartState = {
@@ -44,7 +80,7 @@ const initialState: cartState = {
 
 export default function cartReducer(
   state: cartState = initialState,
-  action: cartAction
+  action: CartAction
 ): cartState {
   switch (action.type) {
     case READ_CART_REQUEST:
@@ -77,6 +113,28 @@ export default function cartReducer(
       };
 
     case UPDATE_QUANTITY_SUCCESS:
+      return {
+        ...state,
+        cart: action.payload,
+        loading: false,
+        error: null,
+      };
+
+    case DELETE_CART_ITEM_ERROR:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
+
+    case DELETE_CART_ITEM_REQUEST:
+      return {
+        ...state,
+        loading: true,
+        error: null,
+      };
+
+    case DELETE_CART_ITEM_SUCCESS:
       return {
         ...state,
         cart: action.payload,

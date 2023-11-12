@@ -20,6 +20,7 @@ return new class extends Migration
             $table->foreignIdFor(Cart::class, 'cart_id');
             $table->foreignIdFor(Product::class, 'product_id');
             $table->integer('quantity');
+            $table->softDeletes();
             $table->timestamps();
 
         });

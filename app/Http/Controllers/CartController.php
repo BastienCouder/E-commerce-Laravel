@@ -23,11 +23,14 @@ class CartController extends Controller
             case 'PATCH':
                 return $this->update($request, $request->route('cart'));
             case 'DELETE':
-                return $this->destroy($request->route('cart'));
+                return $this->softDelete($request->route('cart'));
             default:
                 return response(['message' => 'Invalid Request'], Response::HTTP_BAD_REQUEST);
         }
     }
+
+    //GET SOFT DELETE
+    // $deletedCartItems = CartItem::onlyTrashed()->get();
 
     public function read(Request $request)
     {
@@ -42,6 +45,7 @@ class CartController extends Controller
                 return response()->json(['message' => 'Panier non trouvé.'], 404);
             }
         } catch (\Exception $e) {
+
             return response()->json(['message' => 'Une erreur s\'est produite.'], 500);
         }
     }
@@ -207,7 +211,7 @@ public function update(Request $request, $cartItemId)
 {
     try {
         $request->validate([
-            'quantity' => 'required|integer|min:1',
+            'quantity' => 'required|integer|min:1', // Validez la nouvelle quantité
         ]);
 
         $cartItem = CartItem::find($cartItemId);
@@ -216,15 +220,68 @@ public function update(Request $request, $cartItemId)
             throw new \Exception('Cart item not found.');
         }
 
+        // Sauvegardez l'ancienne quantité avant la mise à jour
+        $oldQuantity = $cartItem->quantity;
+
         $cartItem->quantity = $request->input('quantity');
         $cartItem->save();
 
-        return response()->json(['message' => 'Quantity updated successfully.']);
+        // Assurez-vous que la relation entre CartItem et Product est définie
+        $product = $cartItem->product;
+
+        // Assurez-vous que la relation entre User et Cart est définie
+        $user = auth()->user(); // Cela suppose que vous utilisez l'authentification Laravel
+
+        $cart = $user->cart;
+
+        if ($cart) {
+            // Mettez à jour le prix total du panier en fonction de la modification de la quantité
+            $cart->total_price += ($cartItem->quantity - $oldQuantity) * $product->price;
+            $cart->save();
+        } else {
+            throw new \Exception('Cart not found for the user.');
+        }
+
+        return response()->json(['message' => 'Quantity and total price updated successfully.']);
     } catch (\Exception $e) {
         return response()->json(['message' => $e->getMessage()], 500);
     }
 }
 
+public function softDelete($cartItemId)
+{
+    try {
+        $cartItem = CartItem::find($cartItemId);
+
+        if (!$cartItem) {
+            throw new \Exception('Cart item not found.');
+        }
+
+        $cart = $cartItem->cart;
+
+        // Assurez-vous que le prix total de l'item est valide avant de le soustraire du prix total du Cart
+        if ($cartItem->product && $cartItem->quantity > 0) {
+            $totalItemPrice = $cartItem->product->price * $cartItem->quantity;
+
+            error_log("Prix total du Cart avant la mise à jour : {$cart->total_price}");
+            error_log("Prix total de l'item à soustraire : {$totalItemPrice}");
+
+            $cart->total_price -= $totalItemPrice;
+            $cart->save();
+            
+            error_log("Prix total du Cart après la mise à jour : {$cart->total_price}");
+        }
+
+        $cartItem->delete();
+
+        return response()->json(['message' => 'Cart item deleted successfully.']);
+    } catch (\Exception $e) {
+        // Log en cas d'erreur
+        error_log("Erreur lors de la suppression du CartItem : {$e->getMessage()}");
+
+        return response()->json(['message' => $e->getMessage()], 500);
+    }
+}
 
 public function mergeCart(Request $request)
 {

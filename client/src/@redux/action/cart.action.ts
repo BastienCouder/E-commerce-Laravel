@@ -45,12 +45,12 @@ export type CartAction =
   | ReadCartErrorAction;
 
 // Async action creator function
-export const readCart = (CartId: string): any => {
+export const readCart = (): any => {
   return async (dispatch: Dispatch) => {
     try {
       dispatch(readCartRequest());
 
-      const response = await axiosClient.get<Cart>(`/cart/${CartId}`, {
+      const response = await axiosClient.get<Cart>(`/cart`, {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
@@ -110,8 +110,11 @@ export type UpdateQuantityAction =
   | UpdateQuantityErrorAction;
 
 // Async action creator function
-export const updateQuantity = (cartItemId: number, newQuantity: number) => {
-  return async (dispatch: Dispatch<UpdateQuantityAction>) => {
+export const updateQuantity = (
+  cartItemId: number,
+  newQuantity: number
+): any => {
+  return async (dispatch: Dispatch) => {
     try {
       dispatch(updateQuantityRequest());
 
@@ -128,9 +131,79 @@ export const updateQuantity = (cartItemId: number, newQuantity: number) => {
       );
 
       dispatch(updateQuantitySuccess(response.data));
+      dispatch(readCart());
     } catch (error: any) {
       dispatch(updateQuantityError(error.message));
       console.error("Erreur lors de la mise à jour de la quantité :", error);
+    }
+  };
+};
+
+// DELETE
+// Action type constants
+export const DELETE_CART_ITEM_REQUEST = "DELETE_CART_ITEM_REQUEST";
+export const DELETE_CART_ITEM_SUCCESS = "DELETE_CART_ITEM_SUCCESS";
+export const DELETE_CART_ITEM_ERROR = "DELETE_CART_ITEM_ERROR";
+
+// Action interface
+interface DeleteCartItemRequestAction {
+  type: typeof DELETE_CART_ITEM_REQUEST;
+}
+
+interface DeleteCartItemSuccessAction {
+  type: typeof DELETE_CART_ITEM_SUCCESS;
+  payload: Cart;
+}
+
+interface DeleteCartItemErrorAction {
+  type: typeof DELETE_CART_ITEM_ERROR;
+  payload: string;
+}
+
+// Action creator functions
+export const deleteCartItemRequest = (): DeleteCartItemRequestAction => ({
+  type: DELETE_CART_ITEM_REQUEST,
+});
+
+export const deleteCartItemSuccess = (
+  payload: Cart
+): DeleteCartItemSuccessAction => ({
+  type: DELETE_CART_ITEM_SUCCESS,
+  payload,
+});
+
+export const deleteCartItemError = (
+  payload: string
+): DeleteCartItemErrorAction => ({
+  type: DELETE_CART_ITEM_ERROR,
+  payload,
+});
+
+export type DeleteCartItemAction =
+  | DeleteCartItemRequestAction
+  | DeleteCartItemSuccessAction
+  | DeleteCartItemErrorAction;
+
+// Async action creator function
+export const deleteCartItem = (cartItemId: number): any => {
+  return async (dispatch: Dispatch) => {
+    try {
+      dispatch(deleteCartItemRequest());
+
+      const response = await axiosClient.delete<Cart>(`/cart/${cartItemId}`, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+
+      dispatch(deleteCartItemSuccess(response.data));
+      dispatch(readCart());
+    } catch (error: any) {
+      dispatch(deleteCartItemError(error.message));
+      console.error(
+        "Erreur lors de la suppression d'un article du panier :",
+        error
+      );
     }
   };
 };

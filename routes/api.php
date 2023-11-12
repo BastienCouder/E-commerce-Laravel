@@ -32,11 +32,11 @@ Route::group(['prefix' => 'cart'], function () {
     
     // Ces routes nécessitent l'authentification
     Route::middleware(['auth:sanctum'])->group(function () {
-        Route::post('/merge-cart', 'CartController@mergeCart');
+        Route::post('/merge-cart', [CartController::class, 'mergeCart']);
         Route::get('/', [CartController::class, 'read']);
         Route::post('/', [CartController::class, 'create']);
         Route::put('/update-quantity/{cartItemId}',  [CartController::class, 'update']);
-        Route::delete('/{cart}', [CartController::class, 'destroy']);
+        Route::delete('/{cartItemId}', [CartController::class, 'softDelete']);
     });
     // Ces routes sont accessibles sans authentification
     Route::get('/public', [CartController::class, 'publicRead']);
