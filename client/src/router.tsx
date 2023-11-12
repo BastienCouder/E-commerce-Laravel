@@ -30,6 +30,14 @@ const router: Route[] = [
         element: <ProductDetail key="ProductID" />,
       },
       {
+        path: "/auth",
+        element: <Auth />,
+      },
+      {
+        path: "profile",
+        element: <Profile />,
+      },
+      {
         path: "cart",
         element: <Cart />,
       },

@@ -42,7 +42,6 @@ export default function Products() {
             product.category.name.toLowerCase().replace(/\s+/g, "-")
           ) === categorySlug?.toLowerCase()
       );
-  console.log(categoryProducts);
 
   return (
     <>

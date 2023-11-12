@@ -2,6 +2,8 @@ import { Dispatch } from "redux";
 import axiosClient from "@/lib/axios-client";
 import { Cart } from "@/types/Cart";
 import { authToken } from "@/lib/token";
+import Cookies from "js-cookie";
+import { useAuth } from "@/context/authContext";
 
 //READ
 // Action type constants
@@ -60,6 +62,91 @@ export const readCart = (): any => {
     } catch (error: any) {
       dispatch(readCartError(error.message));
       console.error("Error fetching products:", error);
+    }
+  };
+};
+
+// CREATE
+// Action type constants
+export const CREATE_CART_ITEM_REQUEST = "CREATE_CART_ITEM_REQUEST";
+export const CREATE_CART_ITEM_SUCCESS = "CREATE_CART_ITEM_SUCCESS";
+export const CREATE_CART_ITEM_ERROR = "CREATE_CART_ITEM_ERROR";
+
+// Action interface
+interface CreateCartItemRequestAction {
+  type: typeof CREATE_CART_ITEM_REQUEST;
+}
+
+interface CreateCartItemSuccessAction {
+  type: typeof CREATE_CART_ITEM_SUCCESS;
+  payload: Cart; // Assurez-vous que le type Cart est correct
+}
+
+interface CreateCartItemErrorAction {
+  type: typeof CREATE_CART_ITEM_ERROR;
+  payload: string;
+}
+
+export type CreateCartItemAction =
+  | CreateCartItemRequestAction
+  | CreateCartItemSuccessAction
+  | CreateCartItemErrorAction;
+
+// Action creator functions
+export const createCartItemRequest = (): CreateCartItemRequestAction => ({
+  type: CREATE_CART_ITEM_REQUEST,
+});
+
+export const createCartItemSuccess = (
+  payload: Cart
+): CreateCartItemSuccessAction => ({
+  type: CREATE_CART_ITEM_SUCCESS,
+  payload,
+});
+
+export const createCartItemError = (
+  payload: string
+): CreateCartItemErrorAction => ({
+  type: CREATE_CART_ITEM_ERROR,
+  payload,
+});
+
+// Async action creator function
+export const createCartItem = (productId: string, state: any): any => {
+  return async (dispatch: Dispatch) => {
+    try {
+      dispatch(createCartItemRequest());
+      const cartId = Cookies.get("cart_id");
+
+      if (state) {
+        const response = await axiosClient.post(
+          "/cart",
+          {
+            productId,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          }
+        );
+        dispatch(createCartItemSuccess(response.data));
+      } else {
+        const response = await axiosClient.post("/cart/public", {
+          productId,
+          cartId,
+        });
+        if (!cartId) {
+          const newCartId = response.data.cart?.id;
+          Cookies.set("cart_id", newCartId, { expires: 30 });
+        }
+        dispatch(createCartItemSuccess(response.data));
+      }
+
+      dispatch(readCart());
+    } catch (error: any) {
+      dispatch(createCartItemError(error.message));
+      console.error("Erreur lors de la création du CartItem :", error);
     }
   };
 };

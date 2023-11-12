@@ -9,6 +9,9 @@ import {
   DELETE_CART_ITEM_ERROR,
   DELETE_CART_ITEM_REQUEST,
   DELETE_CART_ITEM_SUCCESS,
+  CREATE_CART_ITEM_ERROR,
+  CREATE_CART_ITEM_SUCCESS,
+  CREATE_CART_ITEM_REQUEST,
 } from "../action/cart.action";
 
 // Type de l'état initial
@@ -30,6 +33,20 @@ interface ReadCartSuccessAction {
 
 interface ReadCartErrorAction {
   type: typeof READ_CART_ERROR;
+  payload: string;
+}
+
+interface CreateCartItemRequestAction {
+  type: typeof CREATE_CART_ITEM_REQUEST;
+}
+
+interface CreateCartItemSuccessAction {
+  type: typeof CREATE_CART_ITEM_SUCCESS;
+  payload: Cart;
+}
+
+interface CreateCartItemErrorAction {
+  type: typeof CREATE_CART_ITEM_ERROR;
   payload: string;
 }
 
@@ -64,6 +81,9 @@ export type CartAction =
   | ReadCartRequestAction
   | ReadCartSuccessAction
   | ReadCartErrorAction
+  | CreateCartItemRequestAction
+  | CreateCartItemSuccessAction
+  | CreateCartItemErrorAction
   | UpdateQuantityRequestAction
   | UpdateQuantitySuccessAction
   | UpdateQuantityErrorAction
@@ -99,6 +119,28 @@ export default function cartReducer(
       };
 
     case READ_CART_ERROR:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
+
+    case CREATE_CART_ITEM_REQUEST:
+      return {
+        ...state,
+        loading: true,
+        error: null,
+      };
+
+    case CREATE_CART_ITEM_SUCCESS:
+      return {
+        ...state,
+        cart: action.payload,
+        loading: false,
+        error: null,
+      };
+
+    case CREATE_CART_ITEM_ERROR:
       return {
         ...state,
         loading: false,

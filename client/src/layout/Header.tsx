@@ -21,6 +21,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import useCheckAuth from "@/hook/useAuthentification";
 import { cn } from "@/lib/utils";
+import Loading from "@/loading";
 import { LogOut, User, UserCircle2 } from "lucide-react";
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -28,7 +29,7 @@ import { Link, useLocation } from "react-router-dom";
 export default function Header() {
   const { user, loading } = useCheckAuth();
   if (loading) {
-    return <p>Loading...</p>;
+    return <Loading />;
   }
 
   const components: { title: string; slug: string; description: string }[] = [
@@ -65,7 +66,7 @@ export default function Header() {
   ];
 
   const location = useLocation();
-  const allowedPathnames = ["/", "/cart"];
+  const allowedPathnames = ["/", "/cart", "/profile"];
   const shouldDisplaySearch = allowedPathnames.includes(location.pathname);
 
   return (

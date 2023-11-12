@@ -16,10 +16,8 @@ import { readProduct } from "@/@redux/action/product.action";
 import ErrorPage from "@/error-page";
 import { RootState } from "@/@redux/reducer";
 import { Size } from "@/types/Product";
-import axiosClient from "@/lib/axios-client";
-import { authToken } from "@/lib/token";
 import { useAuth } from "@/context/authContext";
-import Cookies from "js-cookie";
+import { createCartItem } from "@/@redux/action/cart.action";
 
 export default function ProductDetail() {
   const { state } = useAuth();
@@ -58,35 +56,7 @@ export default function ProductDetail() {
     //   alert("Veuillez sélectionner une taille avant d'ajouter au panier");
     //   return;
     // }
-
-    try {
-      const cartId = Cookies.get("cart_id");
-      console.log("Cart ID from cookie:", cartId);
-      if (state.user) {
-        await axiosClient.post(
-          "/cart",
-          {
-            productId,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${authToken}`,
-            },
-          }
-        );
-      } else {
-        const response = await axiosClient.post("/cart/public", {
-          productId,
-          cartId,
-        });
-        if (!cartId) {
-          const newCartId = response.data.cart?.id;
-          Cookies.set("cart_id", newCartId, { expires: 30 });
-        }
-      }
-    } catch (error: any) {
-      console.error("Erreur lors de la requête POST :", error);
-    }
+    dispatch(createCartItem(productId!, state.user));
   };
 
   return (
@@ -175,7 +145,7 @@ export default function ProductDetail() {
             )}
           </div>
           <div className="pt-2">
-            {isLoading ? (
+            {product?.stock && product.stock > 0 && isLoading ? (
               <Skeleton className="w-1/3 h-10" />
             ) : (
               <AddToCartButton
