@@ -3,7 +3,6 @@ import axiosClient from "@/lib/axios-client";
 import { Cart } from "@/types/Cart";
 import { authToken } from "@/lib/token";
 import Cookies from "js-cookie";
-import { useAuth } from "@/context/authContext";
 
 //READ
 // Action type constants
@@ -47,21 +46,30 @@ export type CartAction =
   | ReadCartErrorAction;
 
 // Async action creator function
-export const readCart = (): any => {
+export const readCart = (state: any): any => {
   return async (dispatch: Dispatch) => {
     try {
+      const cartId = Cookies.get("cart_id");
       dispatch(readCartRequest());
 
-      const response = await axiosClient.get<Cart>(`/cart`, {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      });
+      let response;
+
+      if (state) {
+        response = await axiosClient.get<Cart>("/cart", {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        });
+      } else {
+        response = await axiosClient.get<Cart>("/cart/public", {
+          params: { cartId },
+        });
+      }
 
       dispatch(readCartSuccess(response.data));
     } catch (error: any) {
       dispatch(readCartError(error.message));
-      console.error("Error fetching products:", error);
+      console.error("Error fetching cart:", error);
     }
   };
 };
@@ -117,9 +125,10 @@ export const createCartItem = (productId: string, state: any): any => {
     try {
       dispatch(createCartItemRequest());
       const cartId = Cookies.get("cart_id");
+      let response;
 
       if (state) {
-        const response = await axiosClient.post(
+        response = await axiosClient.post(
           "/cart",
           {
             productId,
@@ -130,9 +139,8 @@ export const createCartItem = (productId: string, state: any): any => {
             },
           }
         );
-        dispatch(createCartItemSuccess(response.data));
       } else {
-        const response = await axiosClient.post("/cart/public", {
+        response = await axiosClient.post("/cart/public", {
           productId,
           cartId,
         });
@@ -140,10 +148,10 @@ export const createCartItem = (productId: string, state: any): any => {
           const newCartId = response.data.cart?.id;
           Cookies.set("cart_id", newCartId, { expires: 30 });
         }
-        dispatch(createCartItemSuccess(response.data));
       }
 
-      dispatch(readCart());
+      dispatch(createCartItemSuccess(response.data));
+      dispatch(readCart(state));
     } catch (error: any) {
       dispatch(createCartItemError(error.message));
       console.error("Erreur lors de la création du CartItem :", error);
@@ -199,26 +207,41 @@ export type UpdateQuantityAction =
 // Async action creator function
 export const updateQuantity = (
   cartItemId: number,
-  newQuantity: number
+  newQuantity: number,
+  state: any
 ): any => {
   return async (dispatch: Dispatch) => {
     try {
       dispatch(updateQuantityRequest());
+      const cartId = Cookies.get("cart_id");
 
-      const response = await axiosClient.put<Cart>(
-        `/cart/update-quantity/${cartItemId}`,
-        {
-          quantity: newQuantity,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
+      let response;
+
+      if (state) {
+        response = await axiosClient.put(
+          `/cart/update-quantity/${cartItemId}`,
+          {
+            quantity: newQuantity,
           },
-        }
-      );
+          {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          }
+        );
+      } else {
+        response = await axiosClient.put(
+          `/cart/public/update-quantity/${cartItemId}`,
+          {
+            cartId,
+            quantity: newQuantity,
+          }
+        );
+      }
+      console.log(response);
 
       dispatch(updateQuantitySuccess(response.data));
-      dispatch(readCart());
+      dispatch(readCart(state));
     } catch (error: any) {
       dispatch(updateQuantityError(error.message));
       console.error("Erreur lors de la mise à jour de la quantité :", error);
@@ -272,19 +295,29 @@ export type DeleteCartItemAction =
   | DeleteCartItemErrorAction;
 
 // Async action creator function
-export const deleteCartItem = (cartItemId: number): any => {
+export const deleteCartItem = (cartItemId: number, state: any): any => {
   return async (dispatch: Dispatch) => {
     try {
       dispatch(deleteCartItemRequest());
 
-      const response = await axiosClient.delete<Cart>(`/cart/${cartItemId}`, {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      });
+      const cartId = Cookies.get("cart_id");
+
+      let response;
+
+      if (state) {
+        response = await axiosClient.delete(`/cart/${cartItemId}`, {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        });
+      } else {
+        response = await axiosClient.delete(`/cart/public/${cartItemId}`, {
+          params: { cartId },
+        });
+      }
 
       dispatch(deleteCartItemSuccess(response.data));
-      dispatch(readCart());
+      dispatch(readCart(state));
     } catch (error: any) {
       dispatch(deleteCartItemError(error.message));
       console.error(

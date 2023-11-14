@@ -13,21 +13,28 @@ class CartController extends Controller
 {
 
     public function handleRequest(Request $request)
-    {
-        switch ($request->method()) {
-            case 'GET':
-                return Auth::check() ? $this->read() : $this->publicRead();
-            case 'POST':
-                return Auth::check() ? $this->create($request) : $this->publicCreate($request);
-            case 'PUT':
-            case 'PATCH':
-                return $this->update($request, $request->route('cart'));
-            case 'DELETE':
-                return $this->softDelete($request->route('cart'));
-            default:
-                return response(['message' => 'Invalid Request'], Response::HTTP_BAD_REQUEST);
-        }
+{
+    if ($request->isMethod('GET')) {
+        return Auth::check() ? $this->read() : $this->publicRead();
+    } elseif ($request->isMethod('POST')) {
+        return Auth::check() ? $this->create($request) : $this->publicCreate($request);
+    } elseif ($request->isMethod('PUT') || $request->isMethod('PATCH')) {
+        return $this->handleUpdate($request);
+    } elseif ($request->isMethod('DELETE')) {
+        return $this->softDelete($request->route('cart'));
+    } else {
+        return response(['message' => 'Invalid Request'], Response::HTTP_BAD_REQUEST);
     }
+}
+
+protected function handleUpdate(Request $request)
+{
+    // You can add logic to differentiate between Authenticated and Public update if needed
+    return Auth::check() ? $this->update($request) : $this->publicUpdate($request);
+}
+
+
+
 
     //GET SOFT DELETE
     // $deletedCartItems = CartItem::onlyTrashed()->get();
@@ -50,12 +57,23 @@ class CartController extends Controller
         }
     }
 
-    public function publicRead()
-    {
-        $cart = session('cart', []);
+public function publicRead(Request $request)
+{
+    $cartId = $request->input('cartId');
+    $cart = session('cart', []);
 
-        return response()->json(['cart' => $cart]);
+    if ($cartId) {
+        $cart = Cart::with('cartItems.product')->find($cartId);
+        if ($cart) {
+            session(['cart' => ['id' => $cart->id]]);
+        }
     }
+
+    return response()->json([
+        'cart' => $cart,
+        'cartItems' => $cart->cartItems ?? [],
+    ]);
+}
 
     public function create(Request $request)
     {
@@ -248,9 +266,70 @@ public function update(Request $request, $cartItemId)
     }
 }
 
+public function publicUpdate(Request $request, $cartItemId)
+{
+    try {
+        $request->validate([
+            'quantity' => 'required|integer|min:1', // Validez la nouvelle quantité
+            'cartId' => 'required|exists:carts,id', // Validez l'ID du panier
+        ]);
+
+        $quantity = $request->input('quantity');
+        $cartId = $request->input('cartId');
+
+        // Chargez le panier
+        $cart = Cart::with('cartItems')->find($cartId);
+
+        if (!$cart) {
+            throw new \Exception('Cart not found.');
+        }
+
+        // Trouvez l'élément du panier à mettre à jour
+        $cartItem = $cart->cartItems->where('id', $cartItemId)->first();
+
+        if (!$cartItem) {
+            throw new \Exception('Cart item not found.');
+        }
+
+        // Sauvegardez l'ancienne quantité avant la mise à jour
+        $oldQuantity = $cartItem->quantity;
+
+        // Mettez à jour la quantité de l'élément du panier
+        $cartItem->quantity = $quantity;
+        $cartItem->save();
+
+        // Assurez-vous que la relation entre CartItem et Product est définie
+        $product = $cartItem->product;
+
+        // Mettez à jour le prix total du panier en fonction de la modification de la quantité
+        $cart->total_price = $cart->total_price + ($quantity - $oldQuantity) * $product->price;
+        $cart->save();
+
+        // Logs pour le suivi
+        error_log("Cart ID: " . $cart->id);
+        error_log("Updated Cart Item ID: " . $cartItem->id);
+        error_log("New Quantity: " . $quantity);
+        error_log("Total Price After Update: " . $cart->total_price);
+
+        return response()->json([
+            'success' => true,
+            'cart' => $cart,
+            'cartItems' => $cart->cartItems,
+        ])->withCookie(cookie('cart_id', $cart->id, 60 * 24 * 30));
+    } catch (\Exception $e) {
+        // Gérer l'exception si elle se produit
+        error_log($e->getMessage());
+        error_log("Exception Trace: " . $e->getTraceAsString());
+        return response()->json(['message' => 'Une erreur s\'est produite'], Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+}
+
+
+
 public function softDelete($cartItemId)
 {
     try {
+
         $cartItem = CartItem::find($cartItemId);
 
         if (!$cartItem) {
@@ -259,7 +338,6 @@ public function softDelete($cartItemId)
 
         $cart = $cartItem->cart;
 
-        // Assurez-vous que le prix total de l'item est valide avant de le soustraire du prix total du Cart
         if ($cartItem->product && $cartItem->quantity > 0) {
             $totalItemPrice = $cartItem->product->price * $cartItem->quantity;
 
@@ -276,7 +354,49 @@ public function softDelete($cartItemId)
 
         return response()->json(['message' => 'Cart item deleted successfully.']);
     } catch (\Exception $e) {
-        // Log en cas d'erreur
+        error_log("Erreur lors de la suppression du CartItem : {$e->getMessage()}");
+
+        return response()->json(['message' => $e->getMessage()], 500);
+    }
+}
+
+public function publicSoftDelete(Request $request, $cartItemId)
+{
+    try {
+        
+        $cartId = $request->input('cartId');
+        $cart = session('cart', []);
+        
+        if ($cartId) {
+            $cart = Cart::with('cartItems')->find($cartId);
+            if ($cart) {
+                session(['cart' => ['id' => $cart->id]]);
+            }
+        }
+
+        $cartItem = CartItem::find($cartItemId);
+
+        if (!$cartItem) {
+            throw new \Exception('Cart item not found.');
+        }
+
+        $cart = $cartItem->cart;
+        if ($cartItem->product && $cartItem->quantity > 0) {
+            $totalItemPrice = $cartItem->product->price * $cartItem->quantity;
+
+            error_log("Prix total du Cart avant la mise à jour : {$cart->total_price}");
+            error_log("Prix total de l'item à soustraire : {$totalItemPrice}");
+
+            $cart->total_price -= $totalItemPrice;
+            $cart->save();
+            
+            error_log("Prix total du Cart après la mise à jour : {$cart->total_price}");
+        }
+
+        $cartItem->delete();
+
+        return response()->json(['message' => 'Cart item deleted successfully.']);
+    } catch (\Exception $e) {
         error_log("Erreur lors de la suppression du CartItem : {$e->getMessage()}");
 
         return response()->json(['message' => $e->getMessage()], 500);

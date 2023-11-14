@@ -30,7 +30,7 @@ Route::group(['prefix' => 'products'], function () {
 
 Route::group(['prefix' => 'cart'], function () {
     
-    // Ces routes nécessitent l'authentification
+    // With authentification
     Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('/merge-cart', [CartController::class, 'mergeCart']);
         Route::get('/', [CartController::class, 'read']);
@@ -38,10 +38,11 @@ Route::group(['prefix' => 'cart'], function () {
         Route::put('/update-quantity/{cartItemId}',  [CartController::class, 'update']);
         Route::delete('/{cartItemId}', [CartController::class, 'softDelete']);
     });
-    // Ces routes sont accessibles sans authentification
+    // Without authentification
     Route::get('/public', [CartController::class, 'publicRead']);
     Route::post('/public', [CartController::class, 'publicCreate']);
-    // Ajoutez d'autres routes publiques au besoin
+    Route::put('/public/update-quantity/{cartItemId}', [CartController::class, 'publicUpdate']);
+    Route::delete('/public/{cartItemId}', [CartController::class, 'publicSoftDelete']);
 });
 
 Route::get('/login/google', 'GoogleController@redirectToProvider')->name('google.login');
