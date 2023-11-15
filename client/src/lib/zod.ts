@@ -104,15 +104,15 @@ export const DeliverySchema = z.object({
     .email({
       message: "E-mail invalide",
     }),
-  address1: z
+  address_1: z
     .string({
       required_error: "L'adresse est requise",
       invalid_type_error: "L'adresse doit être une chaîne de caractères",
     })
     .min(2)
     .max(250),
-  address2: z.string().optional(),
-  postcode: z
+  address_2: z.string().optional(),
+  zipcode: z
     .string({
       required_error: "Le code postal est requis",
       invalid_type_error: "Le code postal doit être une chaîne de caractères",
@@ -133,7 +133,7 @@ export const DeliverySchema = z.object({
     })
     .min(2)
     .max(50),
-  tel: z
+  phone: z
     .string({
       required_error: "Le numéro de téléphone est requis",
       invalid_type_error:

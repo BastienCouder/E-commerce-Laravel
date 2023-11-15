@@ -14,7 +14,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('deliveries_items', function (Blueprint $table) {
+        Schema::create('delivery_items', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Delivery::class, 'delivery_id')->nullable();
             $table->foreignIdFor(DeliveryOption::class, 'deliveryOption_id')->nullable();
@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('surname');
             $table->string('email');
-            $table->string('tel');
+            $table->string('phone');
             $table->string('address_1');
             $table->string('address_2');
             $table->string('zipcode');

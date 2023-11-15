@@ -14,13 +14,11 @@ import {
 import { useAppDispatch, useAppSelector } from "@/hook";
 import { readProduct } from "@/@redux/action/product.action";
 import ErrorPage from "@/error-page";
-import { RootState } from "@/@redux/reducer";
+
 import { Size } from "@/types/Product";
-import { useAuth } from "@/context/authContext";
-import { createCartItem } from "@/@redux/action/cart.action";
+import { RootState } from "@/@redux/store";
 
 export default function ProductDetail() {
-  const { state } = useAuth();
   const { productId } = useParams<{ productId: string }>();
   const [isLoading, setIsLoading] = useState(true);
   const dispatch = useAppDispatch();
@@ -48,15 +46,6 @@ export default function ProductDetail() {
 
   const handleSizeClick = (size: Size) => {
     setSelectedSize(size.name);
-  };
-
-  const handleAddToCartClick = async () => {
-    // if (selectedSize === null) {
-    //   // Aucune taille n'est sélectionnée, affiche une erreur
-    //   alert("Veuillez sélectionner une taille avant d'ajouter au panier");
-    //   return;
-    // }
-    dispatch(createCartItem(productId!, state.user));
   };
 
   return (
@@ -150,10 +139,7 @@ export default function ProductDetail() {
                 {isLoading ? (
                   <Skeleton className="w-1/3 h-10" />
                 ) : (
-                  <AddToCartButton
-                    handleAddToCartClick={handleAddToCartClick}
-                    selectedSize={selectedSize}
-                  />
+                  <AddToCartButton productId={productId!} />
                 )}
               </>
             )}

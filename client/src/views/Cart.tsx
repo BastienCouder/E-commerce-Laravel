@@ -19,7 +19,6 @@ import { useAuth } from "@/context/authContext";
 export default function Cart() {
   const [isLoading, setIsLoading] = useState(false);
   const { state } = useAuth();
-
   const dispatch = useAppDispatch();
   const { cart, loading, error } = useAppSelector(
     (state: RootState) => state.cart
@@ -28,7 +27,6 @@ export default function Cart() {
   if (error) {
     <ErrorPage />;
   }
-  console.log(cart);
 
   if (loading) {
     <Loading />;
@@ -48,7 +46,7 @@ export default function Cart() {
 
   useEffect(() => {
     if (!loading && !error && !cart) {
-      dispatch(readCart(state.user));
+      dispatch(readCart());
     } else {
       setIsLoading(true);
     }

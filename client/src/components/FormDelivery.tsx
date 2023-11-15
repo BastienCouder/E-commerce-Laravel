@@ -29,9 +29,12 @@ import {
   defaultDeliveryValues,
 } from "@/lib/zod";
 import { useAuth } from "@/context/authContext";
+import { createDeliveryItem } from "@/@redux/action/delivery.action";
+import { useAppDispatch } from "@/hook";
 
 export default function FormDelivery() {
   const { state } = useAuth();
+  const dispatch = useAppDispatch();
 
   const form = useForm<DeliveryValues>({
     resolver: zodResolver(DeliverySchema),
@@ -55,25 +58,26 @@ export default function FormDelivery() {
     "Royaume-uni",
   ];
 
-  const onSubmit = async (data: DeliveryValues) => {
+  const onSubmit = async () => {
     if (!state.user) {
       setError("Veuillez vous connecter");
       return;
     }
 
-    const formData = new FormData();
-    formData.append("name", data.name);
-    formData.append("surname", data.surname);
-    formData.append("email", data.email);
-    formData.append("address1", data.address1);
-    formData.append("address2", data.address2 || "");
-    formData.append("country", data.country);
-    formData.append("postcode", data.postcode);
-    formData.append("city", data.city);
-    formData.append("tel", data.tel);
+    const payload = {
+      name: form.getValues("name")?.toString(),
+      surname: form.getValues("surname")?.toString(),
+      email: form.getValues("email")?.toString(),
+      address_1: form.getValues("address_1")?.toString(),
+      address_2: form.getValues("address_2")?.toString(),
+      country: form.getValues("country")?.toString(),
+      zipcode: form.getValues("zipcode")?.toString(),
+      city: form.getValues("city")?.toString(),
+      phone: form.getValues("phone")?.toString(),
+    };
 
     try {
-      //   await deliveryForm(formData);
+      dispatch(createDeliveryItem(payload));
       toggleFormVisibility();
       toast.success("Addresse de livraison ajoutée avec succès");
       form.reset();
@@ -151,12 +155,12 @@ export default function FormDelivery() {
             {/*tel*/}
             <FormField
               control={form.control}
-              name="tel"
+              name="phone"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Téléphone*</FormLabel>
                   <FormControl>
-                    <Input placeholder="tel" {...field} />
+                    <Input placeholder="téléphone" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -165,7 +169,7 @@ export default function FormDelivery() {
             {/* address 1*/}
             <FormField
               control={form.control}
-              name="address1"
+              name="address_1"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Adresse 1*</FormLabel>
@@ -179,7 +183,7 @@ export default function FormDelivery() {
             {/* address 2*/}
             <FormField
               control={form.control}
-              name="address2"
+              name="address_2"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Adresse 2</FormLabel>
@@ -221,7 +225,7 @@ export default function FormDelivery() {
             {/* postcode*/}
             <FormField
               control={form.control}
-              name="postcode"
+              name="zipcode"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Code Postal*</FormLabel>

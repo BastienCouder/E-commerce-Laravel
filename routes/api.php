@@ -5,6 +5,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\DeliveryController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\OrderController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -47,13 +48,19 @@ Route::group(['prefix' => 'cart'], function () {
 });
 
 Route::group(['prefix' => 'delivery'], function () {
-    
-    // With authentification
     Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/', [DeliveryController::class, 'read']);
         Route::post('/', [DeliveryController::class, 'create']);
-        Route::put('/update-delivery/{deliveryItemId}',  [DeliveryController::class, 'update']);
+        Route::patch('/update-deliveryDefault/{deliveryItemId}',  [DeliveryController::class, 'updateDefaultDeliveryItem']);
         Route::delete('/{deliveryItemId}', [DeliveryController::class, 'softDelete']);
+    });
+});
+
+Route::group(['prefix' => 'order'], function () {
+    Route::middleware(['auth:sanctum'])->group(function () {
+        Route::get('/', [OrderController::class, 'read']);
+        Route::post('/', [OrderController::class, 'create']);
+        Route::delete('/{OrderItemId}', [OrderController::class, 'softDelete']);
     });
 });
 

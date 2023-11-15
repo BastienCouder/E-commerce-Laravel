@@ -16,10 +16,11 @@ class OrderItem extends Model
         'deliveryItem_id',
     ];
 
-    public function order()
+    public function delivery()
     {
-        return $this->belongsTo(Order::class);
+        return $this->belongsTo(Delivery::class);
     }
+
 
     public function cart()
     {

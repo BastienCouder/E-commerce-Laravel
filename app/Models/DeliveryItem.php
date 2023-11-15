@@ -10,6 +10,7 @@ class DeliveryItem extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $table = 'delivery_items';
     protected $fillable = [
         'deliveryId',
         'createdAt',
@@ -19,7 +20,7 @@ class DeliveryItem extends Model
         'name',
         'surname',
         'email',
-        'tel',
+        'phone',
         'address_1',
         'address_2',
         'zipcode',
@@ -39,4 +40,8 @@ class DeliveryItem extends Model
         return $this->belongsTo(DeliveryOption::class);
     }
 
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
 }

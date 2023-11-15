@@ -46,7 +46,7 @@ export type CartAction =
   | ReadCartErrorAction;
 
 // Async action creator function
-export const readCart = (state: any): any => {
+export const readCart = (): any => {
   return async (dispatch: Dispatch) => {
     try {
       const cartId = Cookies.get("cart_id");
@@ -54,14 +54,14 @@ export const readCart = (state: any): any => {
 
       let response;
 
-      if (state) {
-        response = await axiosClient.get<Cart>("/cart", {
+      if (authToken) {
+        response = await axiosClient.get("/cart", {
           headers: {
             Authorization: `Bearer ${authToken}`,
           },
         });
       } else {
-        response = await axiosClient.get<Cart>("/cart/public", {
+        response = await axiosClient.get("/cart/public", {
           params: { cartId },
         });
       }
@@ -120,14 +120,14 @@ export const createCartItemError = (
 });
 
 // Async action creator function
-export const createCartItem = (productId: string, state: any): any => {
+export const createCartItem = (productId: string): any => {
   return async (dispatch: Dispatch) => {
     try {
       dispatch(createCartItemRequest());
       const cartId = Cookies.get("cart_id");
       let response;
 
-      if (state) {
+      if (authToken) {
         response = await axiosClient.post(
           "/cart",
           {
@@ -151,7 +151,7 @@ export const createCartItem = (productId: string, state: any): any => {
       }
 
       dispatch(createCartItemSuccess(response.data));
-      dispatch(readCart(state));
+      dispatch(readCart());
     } catch (error: any) {
       dispatch(createCartItemError(error.message));
       console.error("Erreur lors de la création du CartItem :", error);
@@ -217,7 +217,7 @@ export const updateQuantity = (
 
       let response;
 
-      if (state) {
+      if (authToken) {
         response = await axiosClient.put(
           `/cart/update-quantity/${cartItemId}`,
           {
@@ -240,7 +240,7 @@ export const updateQuantity = (
       }
 
       dispatch(updateQuantitySuccess(response.data));
-      dispatch(readCart(state));
+      dispatch(readCart());
     } catch (error: any) {
       dispatch(updateQuantityError(error.message));
       console.error("Erreur lors de la mise à jour de la quantité :", error);
@@ -303,20 +303,20 @@ export const deleteCartItem = (cartItemId: number, state: any): any => {
 
       let response;
 
-      if (state) {
+      if (state === null) {
+        response = await axiosClient.delete(`/cart/public/${cartItemId}`, {
+          params: { cartId },
+        });
+      } else {
         response = await axiosClient.delete(`/cart/${cartItemId}`, {
           headers: {
             Authorization: `Bearer ${authToken}`,
           },
         });
-      } else {
-        response = await axiosClient.delete(`/cart/public/${cartItemId}`, {
-          params: { cartId },
-        });
       }
 
       dispatch(deleteCartItemSuccess(response.data));
-      dispatch(readCart(state));
+      dispatch(readCart());
     } catch (error: any) {
       dispatch(deleteCartItemError(error.message));
       console.error(
@@ -365,8 +365,7 @@ export const mergeCart = (cartId: string, authToken: string): any => {
   return async (dispatch: Dispatch) => {
     try {
       dispatch(mergeCartRequest());
-
-      const response = await axiosClient.post(
+      await axiosClient.post(
         "cart/merge-cart",
         { cartId },
         {
@@ -375,9 +374,6 @@ export const mergeCart = (cartId: string, authToken: string): any => {
           },
         }
       );
-
-      console.log(response.data.message);
-
       dispatch(mergeCartSuccess());
     } catch (error: any) {
       console.error("Error merging carts:", error);

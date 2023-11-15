@@ -60,6 +60,11 @@ protected function handleDelete($cartId)
         try {
     
             $user = Auth::user();
+
+            if (!$user || !Auth::check()) {
+                return response()->json(['message' => 'Utilisateur non authentifié.'], 401);
+            }
+            
             $cart = $user->cart;
             if ($cart) {
                 $cartItems = $cart->cartItems()->with('product')->get();
@@ -230,7 +235,7 @@ public function update(Request $request, $cartItemId)
 {
     try {
         $request->validate([
-            'quantity' => 'required|integer|min:1', // Validez la nouvelle quantité
+            'quantity' => 'required|integer|min:1',
         ]);
 
         $cartItem = CartItem::find($cartItemId);

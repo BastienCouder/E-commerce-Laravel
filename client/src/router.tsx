@@ -9,7 +9,8 @@ import Auth from "./views/Auth";
 import NotFound from "./not-found";
 import Cart from "./views/Cart";
 import MainLayout from "./layout/MainLayout";
-import Delivery from "./views/delivery";
+import Delivery from "./views/Delivery";
+import Summary from "./views/Summary";
 
 interface Route {
   path: string;
@@ -45,6 +46,10 @@ const router: Route[] = [
       {
         path: "delivery",
         element: <Delivery />,
+      },
+      {
+        path: "summary",
+        element: <Summary />,
       },
     ],
   },
