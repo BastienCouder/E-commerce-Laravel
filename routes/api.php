@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\DeliveryController;
 use App\Http\Controllers\CartController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -44,6 +45,18 @@ Route::group(['prefix' => 'cart'], function () {
     Route::put('/public/update-quantity/{cartItemId}', [CartController::class, 'publicUpdate']);
     Route::delete('/public/{cartItemId}', [CartController::class, 'publicSoftDelete']);
 });
+
+Route::group(['prefix' => 'delivery'], function () {
+    
+    // With authentification
+    Route::middleware(['auth:sanctum'])->group(function () {
+        Route::get('/', [DeliveryController::class, 'read']);
+        Route::post('/', [DeliveryController::class, 'create']);
+        Route::put('/update-delivery/{deliveryItemId}',  [DeliveryController::class, 'update']);
+        Route::delete('/{deliveryItemId}', [DeliveryController::class, 'softDelete']);
+    });
+});
+
 
 Route::get('/login/google', 'GoogleController@redirectToProvider')->name('google.login');
 Route::get('/login/google/callback', 'GoogleController@handleProviderCallback');

@@ -12,25 +12,41 @@ use Illuminate\Http\Response;
 class CartController extends Controller
 {
 
-    public function handleRequest(Request $request)
+public function handleRequest(Request $request)
 {
-    if ($request->isMethod('GET')) {
-        return Auth::check() ? $this->read() : $this->publicRead();
-    } elseif ($request->isMethod('POST')) {
-        return Auth::check() ? $this->create($request) : $this->publicCreate($request);
-    } elseif ($request->isMethod('PUT') || $request->isMethod('PATCH')) {
-        return $this->handleUpdate($request);
-    } elseif ($request->isMethod('DELETE')) {
-        return $this->softDelete($request->route('cart'));
-    } else {
-        return response(['message' => 'Invalid Request'], Response::HTTP_BAD_REQUEST);
+    switch ($request->method()) {
+        case 'GET':
+            return $this->handleRead($request);
+        case 'POST':
+            return $this->handleCreate($request);
+        case 'PUT':
+        case 'PATCH':
+            return $this->handleUpdate($request);
+        case 'DELETE':
+            return $this->handleDelete($request->route('cart'));
+        default:
+            return response(['message' => 'Invalid Request'], Response::HTTP_BAD_REQUEST);
     }
+}
+
+protected function handleRead(Request $request)
+{
+    return Auth::check() ? $this->read() : $this->publicRead();
+}
+
+protected function handleCreate(Request $request)
+{
+    return Auth::check() ? $this->create($request) : $this->publicCreate($request);
 }
 
 protected function handleUpdate(Request $request)
 {
-    // You can add logic to differentiate between Authenticated and Public update if needed
     return Auth::check() ? $this->update($request) : $this->publicUpdate($request);
+}
+
+protected function handleDelete($cartId)
+{
+    return Auth::check() ? $this->softDelete($cartId) : $this->publicSoftDelete($cartId);
 }
 
 
@@ -101,24 +117,9 @@ public function publicRead(Request $request)
                 }
             
                 error_log("Cart ID: " . $cart->id);
+            } else {
+                    error_log("Aucun panier");
             }
-            else {
-                    // L'utilisateur n'est pas authentifié, utilisez la session pour le panier
-                    $cart = session('cart', []);
-                
-                    if (empty($cart)) {
-                        $cart = new Cart();
-                        $cart->total_price = 0;
-                        $cart->status = 'active';
-                        $cart->save();
-                
-                        // Stockez l'ID du panier dans la session
-                        session(['cart' => ['id' => $cart->id]]);
-                    }
-                
-                    // Vous pouvez accéder à l'ID du panier de la session de cette manière (à des fins de journalisation par exemple)
-                }
-                error_log("Cart ID: " . ($cart['id'] ?? "N/A"));
                 
     
             $product = Product::find($productId);
@@ -411,32 +412,33 @@ public function mergeCart(Request $request)
         // Vérifiez si l'utilisateur est authentifié
         $user = Auth::user();
         if (!$user) {
-            throw new \Exception('L\'utilisateur n\'est pas authentifié.');
+            error_log("L'utilisateur n'est pas authentifié.");
+            throw new \Exception("L'utilisateur n'est pas authentifié.");
         }
 
         error_log("User ID: " . $user->id);
 
         // Récupérez le panier associé à l'ID du cookie
-        $cookieCart = Cart::with('cartItems')->find($cartId);
+        $cart = Cart::with('cartItems')->find($cartId);
 
-        if (!$cookieCart) {
-            throw new \Exception('Panier associé à l\'ID du cookie introuvable.');
+        if (!$cart) {
+            throw new \Exception("Panier associé à l'ID du cookie introuvable.");
         }
 
-        error_log("Cookie Cart ID: " . $cookieCart->id);
+        error_log("Cookie Cart ID: " . $cart->id);
 
         // Récupérez le panier de l'utilisateur connecté
         $userCart = $user->cart;
 
         if (!$userCart) {
             // Si l'utilisateur n'a pas de panier, associez le panier du cookie à l'utilisateur
-            $cookieCart->user()->associate($user);
-            $cookieCart->save();
+            $cart->user()->associate($user);
+            $cart->save();
 
             error_log("Cookie Cart associé à l'utilisateur.");
         } else {
             // Fusionnez les articles du panier associé à l'ID du cookie avec le panier de l'utilisateur
-            foreach ($cookieCart->cartItems as $cartItem) {
+            foreach ($cart->cartItems as $cartItem) {
                 // Vérifiez si le produit existe déjà dans le panier de l'utilisateur
                 $existingCartItem = $userCart->cartItems()->where('product_id', $cartItem->product_id)->first();
 
@@ -444,6 +446,8 @@ public function mergeCart(Request $request)
                     // Le produit existe déjà, incrémentez simplement la quantité
                     $existingCartItem->quantity += $cartItem->quantity;
                     $existingCartItem->save();
+
+                    error_log("Quantité mise à jour pour le produit existant.");
                 } else {
                     // Le produit n'existe pas encore, créez un nouvel élément de panier dans le panier de l'utilisateur
                     $newCartItem = new CartItem([
@@ -451,18 +455,24 @@ public function mergeCart(Request $request)
                         'product_id' => $cartItem->product_id,
                     ]);
                     $userCart->cartItems()->save($newCartItem);
+
+                    error_log("Nouvel élément de panier créé pour le produit manquant.");
+
+                    
                 }
             }
 
             // Mettez à jour le total_price du panier de l'utilisateur
-            $userCart->total_price += $cookieCart->total_price;
+            $userCart->total_price += $cart->total_price;
             $userCart->save();
 
             error_log("Articles du Cookie Cart fusionnés avec le panier de l'utilisateur.");
+
+            $cart->cartItems()->delete();
         }
 
         // Supprimez le panier associé à l'ID du cookie
-        $cookieCart->delete();
+        $cart->delete();
 
         error_log("Cookie Cart supprimé.");
 
@@ -471,5 +481,5 @@ public function mergeCart(Request $request)
         error_log("Erreur lors de la fusion des paniers: " . $e->getMessage());
         return response()->json(['message' => 'Une erreur s\'est produite lors de la fusion des paniers.'], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
-}
+    }
 }

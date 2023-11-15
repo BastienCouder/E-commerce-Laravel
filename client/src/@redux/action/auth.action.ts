@@ -1,7 +1,8 @@
 import { Dispatch } from "redux";
-import { Auth } from "@/types/User";
+import { Auth, User } from "@/types/User";
 import axios, { AxiosRequestConfig } from "axios";
 import Cookies from "js-cookie";
+import axiosClient from "@/lib/axios-client";
 
 // Types
 interface AuthUser {
@@ -94,6 +95,66 @@ export const logout = (): any => {
       window.location.reload();
     } catch (error: any) {
       dispatch({ type: LOGOUT_FAILURE, error: error.message });
+    }
+  };
+};
+
+//CHECK AUTH
+export const CHECK_AUTH_REQUEST = "CHECK_AUTH_REQUEST";
+export const CHECK_AUTH_SUCCESS = "CHECK_AUTH_SUCCESS";
+export const CHECK_AUTH_ERROR = "CHECK_AUTH_ERROR";
+
+interface CheckAuthRequestAction {
+  type: typeof CHECK_AUTH_REQUEST;
+}
+
+interface CheckAuthSuccessAction {
+  type: typeof CHECK_AUTH_SUCCESS;
+  payload: User; // Assurez-vous que le type User est correct
+}
+
+interface CheckAuthErrorAction {
+  type: typeof CHECK_AUTH_ERROR;
+  payload: string;
+}
+
+export const checkAuthRequest = (): CheckAuthRequestAction => ({
+  type: CHECK_AUTH_REQUEST,
+});
+
+export const checkAuthSuccess = (payload: User): CheckAuthSuccessAction => ({
+  type: CHECK_AUTH_SUCCESS,
+  payload,
+});
+
+export const checkAuthError = (payload: string): CheckAuthErrorAction => ({
+  type: CHECK_AUTH_ERROR,
+  payload,
+});
+
+export const checkAuth = (): any => {
+  return async (dispatch: Dispatch) => {
+    dispatch(checkAuthRequest());
+
+    try {
+      const authToken = Cookies.get("authToken");
+
+      if (!authToken) {
+        dispatch(checkAuthError("Auth token not found"));
+        return;
+      }
+
+      const response = await axiosClient.get(`/user`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+
+      dispatch(checkAuthSuccess(response.data));
+    } catch (error: any) {
+      dispatch(checkAuthError(error.message));
+      console.error("Check Auth error:", error);
     }
   };
 };

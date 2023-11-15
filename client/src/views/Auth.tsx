@@ -30,11 +30,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import ShowPassword from "../components/ShowPassword";
 
 //Link
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 
 //Utils
-
 import { AiOutlineGoogle } from "react-icons/ai";
 import axiosClient from "@/lib/axios-client";
 import axios from "axios";
@@ -43,15 +41,28 @@ import { useAppSelector } from "@/hook";
 import { RootState } from "@/@redux/store";
 import { login, register } from "@/@redux/action/auth.action";
 import Cookies from "js-cookie";
+import { mergeCart } from "@/@redux/action/cart.action";
+import { useAuth } from "@/context/authContext";
 
 export default function Auth() {
+  const { state } = useAuth();
+
+  if (state.user) {
+    return <Navigate to="/profile" />;
+  }
+
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const { loading, error } = useAppSelector((state: RootState) => state.auth);
+  const { loading: loadingLog, error: errorLog } = useAppSelector(
+    (state: RootState) => state.auth
+  );
+  const { loading: loadingMerge, error: errorMerge } = useAppSelector(
+    (state: RootState) => state.cart
+  );
   const [checkboxChecked, setCheckboxChecked] = useState(false);
   const [variant, setVariant] = useState("login");
   const [errorCheckbox, setIsErrorCheckbox] = useState("");
   const [isError, setIsError] = useState("");
+  const [authToken, setAuthToken] = useState<any>(null);
 
   const formResolver =
     variant === "login"
@@ -69,41 +80,43 @@ export default function Auth() {
     );
   }, []);
 
+  const mergeCartAfterLogin = async (cartId: string, authToken: string) => {
+    if (authToken) {
+      try {
+        const response = await dispatch(mergeCart(cartId, authToken));
+        console.log(response);
+
+        if (!loadingMerge && !errorMerge) {
+          Cookies.remove("cart_id");
+          setIsErrorCheckbox("");
+          setCheckboxChecked(false);
+          console.log("merge");
+        }
+      } catch (error) {
+        console.error("Erreur lors de la fusion du panier :", error);
+      }
+    }
+  };
+
   const onLogin = useCallback(async () => {
     try {
-      // if (!checkboxChecked) {
-      //   setIsErrorCheckbox("Veuillez accepter les termes et conditions");
-      //   return;
-      // }
-
       const payload = {
         email: form.getValues("email")?.toString(),
         password: form.getValues("password")?.toString(),
       };
 
-      dispatch(login(payload));
-
-      if (!loading && !error) {
-        const cartId = Cookies.get("cart_id");
-        axiosClient
-          .post("/cart/merge-cart", { cartId })
-          .then((response) => {
-            console.log(response.data.message);
-          })
-          .catch((error) => {
-            console.error("Erreur lors de la fusion des paniers :", error);
-          });
-
-        setIsErrorCheckbox("");
-        setCheckboxChecked(false);
-        console.log("success");
-        navigate("/");
+      await dispatch(login(payload));
+      const cartId = Cookies.get("cart_id");
+      const tokenFromCookies = Cookies.get("authToken");
+      setAuthToken(tokenFromCookies);
+      if (cartId) {
+        mergeCartAfterLogin(cartId, authToken);
       }
     } catch (error) {
       console.error("Une erreur s'est produite lors de la connexion :", error);
       throw error;
     }
-  }, [dispatch, form, loading, error, setIsErrorCheckbox, setCheckboxChecked]);
+  }, [dispatch, form, loadingLog, errorLog]);
 
   const onRegister = useCallback(async () => {
     const payload = {

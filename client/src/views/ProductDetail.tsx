@@ -145,13 +145,17 @@ export default function ProductDetail() {
             )}
           </div>
           <div className="pt-2">
-            {product?.stock && product.stock > 0 && isLoading ? (
-              <Skeleton className="w-1/3 h-10" />
-            ) : (
-              <AddToCartButton
-                handleAddToCartClick={handleAddToCartClick}
-                selectedSize={selectedSize}
-              />
+            {product?.stock && product.stock > 0 && (
+              <>
+                {isLoading ? (
+                  <Skeleton className="w-1/3 h-10" />
+                ) : (
+                  <AddToCartButton
+                    handleAddToCartClick={handleAddToCartClick}
+                    selectedSize={selectedSize}
+                  />
+                )}
+              </>
             )}
           </div>
           {isLoading ? (

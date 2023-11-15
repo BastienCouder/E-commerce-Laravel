@@ -12,6 +12,9 @@ import {
   CREATE_CART_ITEM_ERROR,
   CREATE_CART_ITEM_SUCCESS,
   CREATE_CART_ITEM_REQUEST,
+  MERGE_CART_SUCCESS,
+  MERGE_CART_REQUEST,
+  MERGE_CART_ERROR,
 } from "../action/cart.action";
 
 // Type de l'état initial
@@ -77,6 +80,20 @@ interface DeleteCartItemErrorAction {
   payload: string;
 }
 
+interface MergeCartRequestAction {
+  type: typeof MERGE_CART_REQUEST;
+}
+
+interface MergeCartSuccessAction {
+  type: typeof MERGE_CART_SUCCESS;
+  payload: Cart;
+}
+
+interface MergeCartErrorAction {
+  type: typeof MERGE_CART_ERROR;
+  payload: string;
+}
+
 export type CartAction =
   | ReadCartRequestAction
   | ReadCartSuccessAction
@@ -89,7 +106,10 @@ export type CartAction =
   | UpdateQuantityErrorAction
   | DeleteCartItemRequestAction
   | DeleteCartItemSuccessAction
-  | DeleteCartItemErrorAction;
+  | DeleteCartItemErrorAction
+  | MergeCartRequestAction
+  | MergeCartSuccessAction
+  | MergeCartErrorAction;
 
 // État initial
 const initialState: cartState = {
@@ -185,6 +205,28 @@ export default function cartReducer(
       };
 
     case UPDATE_QUANTITY_ERROR:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
+
+    case MERGE_CART_REQUEST:
+      return {
+        ...state,
+        loading: true,
+        error: null,
+      };
+
+    case MERGE_CART_SUCCESS:
+      return {
+        ...state,
+        cart: action.payload,
+        loading: false,
+        error: null,
+      };
+
+    case MERGE_CART_ERROR:
       return {
         ...state,
         loading: false,

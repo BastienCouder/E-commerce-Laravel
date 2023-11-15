@@ -150,7 +150,7 @@ export default function Header() {
                 <DropdownMenuLabel>Mon compte</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
-                  <Link to="/auth" className="font-semibold flex">
+                  <Link to="/profile" className="font-semibold flex">
                     <User color="#25354c" className="mr-2 h-4 w-4" />
                     <span>Profil</span>
                   </Link>

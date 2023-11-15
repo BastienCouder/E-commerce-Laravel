@@ -238,7 +238,6 @@ export const updateQuantity = (
           }
         );
       }
-      console.log(response);
 
       dispatch(updateQuantitySuccess(response.data));
       dispatch(readCart(state));
@@ -324,6 +323,65 @@ export const deleteCartItem = (cartItemId: number, state: any): any => {
         "Erreur lors de la suppression d'un article du panier :",
         error
       );
+    }
+  };
+};
+
+//MERGE
+// Action type constants
+export const MERGE_CART_REQUEST = "MERGE_CART_REQUEST";
+export const MERGE_CART_SUCCESS = "MERGE_CART_SUCCESS";
+export const MERGE_CART_ERROR = "MERGE_CART_ERROR";
+
+// Action interface
+interface MergeCartRequestAction {
+  type: typeof MERGE_CART_REQUEST;
+}
+
+interface MergeCartSuccessAction {
+  type: typeof MERGE_CART_SUCCESS;
+}
+
+interface MergeCartErrorAction {
+  type: typeof MERGE_CART_ERROR;
+  payload: string;
+}
+
+// Action creator functions
+export const mergeCartRequest = (): MergeCartRequestAction => ({
+  type: MERGE_CART_REQUEST,
+});
+
+export const mergeCartSuccess = (): MergeCartSuccessAction => ({
+  type: MERGE_CART_SUCCESS,
+});
+
+export const mergeCartError = (payload: string): MergeCartErrorAction => ({
+  type: MERGE_CART_ERROR,
+  payload,
+});
+
+export const mergeCart = (cartId: string, authToken: string): any => {
+  return async (dispatch: Dispatch) => {
+    try {
+      dispatch(mergeCartRequest());
+
+      const response = await axiosClient.post(
+        "cart/merge-cart",
+        { cartId },
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        }
+      );
+
+      console.log(response.data.message);
+
+      dispatch(mergeCartSuccess());
+    } catch (error: any) {
+      console.error("Error merging carts:", error);
+      dispatch(mergeCartError(error.message));
     }
   };
 };

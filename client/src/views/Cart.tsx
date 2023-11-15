@@ -28,6 +28,7 @@ export default function Cart() {
   if (error) {
     <ErrorPage />;
   }
+  console.log(cart);
 
   if (loading) {
     <Loading />;
@@ -152,7 +153,9 @@ export default function Cart() {
                       </div>
                     </>
                   )}
-                  <Button>Proceder au paiment</Button>
+                  <Button>
+                    <Link to="/delivery">Suivant</Link>
+                  </Button>
                 </>
               ) : (
                 <div className="flex flex-col space-y-4">

@@ -1,7 +1,13 @@
 import { useAuth } from "@/context/authContext";
+import { Navigate } from "react-router-dom";
 
 const Profile: React.FC = () => {
   const { state } = useAuth();
+
+  if (!state.user) {
+    return <Navigate to="/auth" />;
+  }
+
   return (
     <div>
       {state.user ? (
