@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Order;
+use App\Models\Cart;
 use App\Models\OrderItem;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -58,7 +59,7 @@ class OrderController extends Controller
     {
         try {
             $user = Auth::user();
-            
+    
             if ($user && Auth::check()) {
                 error_log("User ID: " . $user->id);
     
@@ -74,8 +75,8 @@ class OrderController extends Controller
                     error_log("L'utilisateur a déjà une commande : " . $order->id);
                 }
     
-                $cartId = $request->input('cart_id');
-                $deliveryItemId = $request->input('delivery_item_id');
+                $cartId = $request->input('cartId');
+                $deliveryItemId = $request->input('deliveryItemId');
     
                 error_log("Cart ID: " . $cartId);
                 error_log("Delivery Item ID: " . $deliveryItemId);
@@ -83,23 +84,24 @@ class OrderController extends Controller
                 $cart = Cart::find($cartId);
     
                 if ($cart && $deliveryItemId) {
-                    foreach ($cart->cartItems()->with('product')->get() as $cartItem) {
-                        $orderItem = new OrderItem([
-                            'cart_id' => $cartId,
-                            'deliveryItem_id' => $deliveryItemId,
-                            'isPaid' => false,
-                            'status' => 'en_attente',
-                        ]);
+                    $orderItem = new OrderItem([
+                        'cart_id' => $cartId,
+                        'deliveryItem_id' => $deliveryItemId,
+                        'isPaid' => false,
+                        'status' => 'en_attente',
+                    ]);
     
-                        $order->orderItems()->save($orderItem);
-                    }
+                    $order->orderItems()->save($orderItem);
     
-                    error_log("Order Items created successfully.");
+                    $cart->status = 'inactive';
+                    $cart->save();
+
+                    error_log("Order Item created successfully.");
                 } else {
                     error_log("Cart or Delivery Item not found.");
                 }
     
-            } 
+            }
         } catch (\Exception $e) {
             error_log($e->getMessage());
             error_log("Exception Trace: " . $e->getTraceAsString());

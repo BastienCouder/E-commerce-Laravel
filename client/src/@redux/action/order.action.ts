@@ -137,6 +137,10 @@ export const createOrderItem = (
           }
         );
       }
+      console.log(cartId);
+      console.log(deliveryItemId);
+      console.log(response);
+
       dispatch(createOrderItemSuccess(response!.data));
       dispatch(readOrder());
     } catch (error: any) {

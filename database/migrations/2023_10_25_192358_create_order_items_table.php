@@ -20,6 +20,8 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(Order::class, 'order_id')->nullable();
             $table->foreignIdFor(Cart::class, 'cart_id')->nullable();
+            $table->decimal('total_price', 20, 2);
+            $table->string('status', 45);
             $table->boolean('isPaid');
             $table->foreignIdFor(DeliveryItem::class, 'deliveryItem_id')->nullable();
             $table->timestamps();

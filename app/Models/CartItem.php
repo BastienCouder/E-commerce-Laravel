@@ -27,6 +27,11 @@ class CartItem extends Model
         return $this->belongsTo(Product::class);
     }
 
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+
     public function getIdAttribute()
     {
         return $this->attributes['id'];

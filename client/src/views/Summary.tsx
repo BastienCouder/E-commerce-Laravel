@@ -21,9 +21,6 @@ export default function Summary() {
     error: errorDelivery,
   } = useAppSelector((state: RootState) => state.delivery);
 
-  console.log(cart);
-  console.log(delivery);
-
   let deliveryItem = null;
   if (delivery) {
     deliveryItem = delivery.deliveryItems.find((item) => item.Default);
@@ -52,6 +49,8 @@ export default function Summary() {
     cart,
     delivery,
   ]);
+
+  console.log(cart);
 
   return (
     <>
@@ -116,7 +115,10 @@ export default function Summary() {
           </article>
           <div>
             {cart && deliveryItem && (
-              <AddToOrder cartId={cart.id} deliveryItemId={deliveryItem.id} />
+              <AddToOrder
+                cartId={cart.cart.id}
+                deliveryItemId={deliveryItem.id}
+              />
             )}
           </div>
         </section>

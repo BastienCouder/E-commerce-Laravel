@@ -12,6 +12,8 @@ class OrderItem extends Model
     protected $fillable = [
         'order_id',
         'cart_id',
+        'total_price',
+        'status',
         'isPaid',
         'deliveryItem_id',
     ];
@@ -26,6 +28,12 @@ class OrderItem extends Model
     {
         return $this->belongsTo(Cart::class);
     }
+
+    public function cartItem()
+    {
+        return $this->belongsTo(CartItem::class);
+    }
+
 
     public function deliveryItem()
     {
