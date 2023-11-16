@@ -1,11 +1,7 @@
 import React, { createContext, useReducer, useContext, useEffect } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
-
-interface User {
-  name: string;
-  // Ajoutez d'autres propriétés de l'utilisateur selon votre besoin
-}
+import { User } from "@/types/User";
 
 interface AuthState {
   user: User | null;

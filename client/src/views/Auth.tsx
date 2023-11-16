@@ -257,7 +257,7 @@ export default function Auth() {
                 )}
               />
               <div className="w-full items-top flexflex-col">
-                <div className="flex  gap-x-2">
+                <div className="flex gap-x-2">
                   <Checkbox id="terms1" onClick={handleClickCheckbox} />
                   <div className="grid gap-1.5 leading-none">
                     <label

@@ -1,8 +1,8 @@
 import { createBrowserRouter, RouteProps } from "react-router-dom";
-import DashboardLayout from "./layout/DashboardLayout";
-import Dashboard from "./Admin/Dashboard";
+import DashboardLayout from "./Admin/layout/DashboardLayout";
 import ProductDetail from "./views/ProductDetail";
 import Products from "./views/Products";
+import ProductsDashboard from "./Admin/Products";
 import Profile from "./views/Profile";
 import GuestLayout from "./layout/GuestLayout";
 import Auth from "./views/Auth";
@@ -11,6 +11,8 @@ import Cart from "./views/Cart";
 import MainLayout from "./layout/MainLayout";
 import Delivery from "./views/Delivery";
 import Summary from "./views/Summary";
+import Orders from "./Admin/Orders";
+import Inventory from "./Admin/Inventory";
 
 interface Route {
   path: string;
@@ -54,12 +56,20 @@ const router: Route[] = [
     ],
   },
   {
-    path: "/",
+    path: "/dashboard",
     element: <DashboardLayout />,
     children: [
       {
-        path: "dashboard",
-        element: <Dashboard />,
+        path: "orders",
+        element: <Orders />,
+      },
+      {
+        path: "products",
+        element: <ProductsDashboard />,
+      },
+      {
+        path: "inventory",
+        element: <Inventory />,
       },
     ],
   },

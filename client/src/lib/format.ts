@@ -36,3 +36,12 @@ export function formatDescription(description: string): string {
   const truncatedDescription = words.slice(0, 20).join(" ");
   return truncatedDescription + "...";
 }
+
+export function formatLongueDescription(description: string): string {
+  const words = description.split(" ");
+  if (words.length <= 10) {
+    return description;
+  }
+  const truncatedDescription = words.slice(0, 10).join(" ");
+  return truncatedDescription + "...";
+}
