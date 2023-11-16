@@ -1,3 +1,6 @@
+import { Cart } from "./Cart";
+import { DeliveryItem } from "./Delivery";
+
 export interface Order {
   id: number;
   status: string;
@@ -13,6 +16,11 @@ export interface OrderItem {
   isPaid: boolean;
   user_id?: number;
   cart_id?: number;
+  cart: Cart;
+  order_number: string;
+  total_price: number;
+  delivery_item: DeliveryItem;
   deliveryItem_id?: number;
   product_id: number;
+  created_at: Date;
 }

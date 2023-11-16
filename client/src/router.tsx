@@ -1,6 +1,6 @@
 import { createBrowserRouter, RouteProps } from "react-router-dom";
 import DashboardLayout from "./layout/DashboardLayout";
-import Dashboard from "./views/Dashboard";
+import Dashboard from "./Admin/Dashboard";
 import ProductDetail from "./views/ProductDetail";
 import Products from "./views/Products";
 import Profile from "./views/Profile";
@@ -58,8 +58,8 @@ const router: Route[] = [
     element: <DashboardLayout />,
     children: [
       {
-        path: "profile",
-        element: <Profile />,
+        path: "dashboard",
+        element: <Dashboard />,
       },
     ],
   },

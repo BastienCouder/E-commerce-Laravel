@@ -1,6 +1,7 @@
 export interface Cart {
   id: number;
   total_price: number;
+  cart_items: CartItem[];
   status: string;
   user_id?: number;
   cartItems: CartItem[];

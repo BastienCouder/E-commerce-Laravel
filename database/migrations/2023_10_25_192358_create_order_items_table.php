@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('order_number', 12)->unique()->nullable();
             $table->foreignIdFor(Order::class, 'order_id')->nullable();
             $table->foreignIdFor(Cart::class, 'cart_id')->nullable();
-            $table->decimal('total_price', 20, 2);
+            $table->decimal('total_price', 20, 2)->default(0);
             $table->string('status', 45);
             $table->boolean('isPaid');
             $table->foreignIdFor(DeliveryItem::class, 'deliveryItem_id')->nullable();

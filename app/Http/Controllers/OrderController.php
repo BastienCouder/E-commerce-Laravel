@@ -49,9 +49,9 @@ class OrderController extends Controller
                 $orderItems = $order->orderItems()->with('cart.cartItems.product', 'deliveryItem')->get();
                 error_log("OrderItems : " . $orderItems);
                 
-                // $orderTotalPrice = $order->total_price;
-                // return response()->json(['order' => $order, 'orderItems' => $orderItems, 'orderTotalPrice' => $orderTotalPrice]);
-                return response()->json(['order' => $order, 'orderItems' => $orderItems]);
+                $orderTotalPrice = $order->total_price;
+                return response()->json(['order' => $order, 'orderItems' => $orderItems, 'orderTotalPrice' => $orderTotalPrice]);
+               
             } else {
                 return response()->json(['message' => 'Données de livraison non trouvées pour cet utilisateur.'], 404);
             }
@@ -90,6 +90,7 @@ class OrderController extends Controller
     
                 if ($cart && $deliveryItemId) {
                     $orderNumber = $this->generateOrderNumber();
+                    $totalPrice = $cart->total_price;
     
                     foreach ($cart->cartItems as $cartItem) {
                         $product = $cartItem->product;
@@ -113,8 +114,11 @@ class OrderController extends Controller
                         'order_number' => $orderNumber,
                     ]);
     
+                    $orderItem->total_price = $totalPrice;
+                    $orderItem->save();
+
                     $order->orderItems()->save($orderItem);
-    
+
                     $cart->status = 'inactive';
                     $cart->save();
     
