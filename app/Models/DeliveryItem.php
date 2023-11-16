@@ -10,7 +10,6 @@ class DeliveryItem extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $table = 'delivery_items';
     protected $fillable = [
         'deliveryId',
         'createdAt',

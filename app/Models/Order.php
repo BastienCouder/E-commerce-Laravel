@@ -22,4 +22,17 @@ class Order extends Model
     {
         return $this->hasMany(OrderItem::class);
     }
+
+    public function deliveryOption()
+{
+    return $this->belongsTo(DeliveryOption::class);
+}
+
+    public function getTotalPriceAttribute()
+{
+    $cartTotalPrice = $this->cart->total_price ?? 0;
+    $deliveryOptionPrice = $this->deliveryOption->price ?? 0;
+
+    return $cartTotalPrice + $deliveryOptionPrice;
+}
 }

@@ -18,6 +18,7 @@ return new class extends Migration
     {
         Schema::create('order_items', function (Blueprint $table) {
             $table->id();
+            $table->string('order_number', 12)->unique()->nullable();
             $table->foreignIdFor(Order::class, 'order_id')->nullable();
             $table->foreignIdFor(Cart::class, 'cart_id')->nullable();
             $table->decimal('total_price', 20, 2);

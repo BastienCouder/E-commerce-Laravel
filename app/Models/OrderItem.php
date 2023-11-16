@@ -14,6 +14,7 @@ class OrderItem extends Model
         'cart_id',
         'total_price',
         'status',
+        'order_number',
         'isPaid',
         'deliveryItem_id',
     ];
@@ -37,6 +38,6 @@ class OrderItem extends Model
 
     public function deliveryItem()
     {
-        return $this->belongsTo(DeliveryItem::class);
+        return $this->belongsTo(DeliveryItem::class, 'deliveryItem_id');
     }
 }

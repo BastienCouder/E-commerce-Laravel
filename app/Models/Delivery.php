@@ -18,6 +18,11 @@ class Delivery extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+
     public function deliveryItems()
     {
         return $this->hasMany(DeliveryItem::class);
