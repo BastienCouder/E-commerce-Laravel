@@ -25,6 +25,7 @@ return new class extends Migration
             $table->longText('longDescription')->nullable();
             $table->decimal('price', 10, 2);
             $table->decimal('stock', 10, 2)->nullable();
+            $table->boolean('value');
             $table->timestamps();
             $table->softDeletes();
         });

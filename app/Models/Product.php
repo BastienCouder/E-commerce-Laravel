@@ -16,6 +16,7 @@ class Product extends Model
         'category_id',
         'size_id',
         'image_mime',
+        'value',
         'image_size',
         'shortDescription',
         'longDescription',

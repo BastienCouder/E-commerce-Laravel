@@ -46,6 +46,7 @@ class ProductController extends Controller
         $request->validate([
             'title' => 'required|max:255',
             'price' => 'required|numeric',
+            'value' => false
             // ... d'autres règles de validation selon vos besoins
         ]);
     

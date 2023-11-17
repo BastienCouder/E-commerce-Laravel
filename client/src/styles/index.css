@@ -16,7 +16,7 @@
         --primary: 215 35% 22%;
         --primary-foreground: 210 40% 98%;
 
-        --secondary: 210 40% 96.1%;
+        --secondary: 225 80% 96.1%;
         --secondary-foreground: 222.2 47.4% 11.2%;
 
         --muted: 0 0% 85%;
@@ -79,4 +79,31 @@
     h2 {
         @apply font-bold uppercase;
     }
+}
+
+input[type="checkbox"] {
+    appearance: none;
+    width: 17px;
+    height: 17px;
+    border: 2px solid hsl(var(--primary));
+    border-radius: 4px;
+    outline: none;
+    cursor: pointer;
+    position: relative;
+    transition: background-color 0.3s;
+}
+
+input[type="checkbox"]:checked {
+    background-color: hsl(var(--primary));
+    border-color: hsl(var(--primary));
+}
+
+input[type="checkbox"]:checked::after {
+    content: "\2713";
+    font-size: 16px;
+    color: white;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
