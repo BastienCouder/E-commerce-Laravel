@@ -6,6 +6,8 @@ use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Storage;
+
 class ProductController extends Controller
 {
 
@@ -34,20 +36,59 @@ class ProductController extends Controller
     public function read()
     {
         $products = Product::with('category')->get();
-    return response()->json($products);
-    }
     
-    public function create()
-    {
-        return response()->json(['message' => 'Method not allowed for creation.'], Response::HTTP_METHOD_NOT_ALLOWED);
-    }
+        foreach ($products as $product) {
+            $product->image = asset(Storage::url($product->image));
+        }
     
+        return response()->json($products);
+    }
     public function store(Request $request)
     {
+        try {
+          
+         
+          
+            $imageFile = $request->file('image');
 
-        $product = Product::create($request->all());
+            if ($imageFile) {
+                error_log('Image File Details: ' . print_r([
+                    'Original Name' => $imageFile->getClientOriginalName(),
+                    'Mime Type' => $imageFile->getClientMimeType(),
+                    'Size' => $imageFile->getSize(),
+                    // Ajoutez d'autres détails selon vos besoins
+                ], true));
+            } else {
+                error_log('No Image File provided in the request.');
+            }
+            $imageName = time().'.'.$request->image->extension();
     
-        return response()->json(['product' => $product, 'message' => 'Produit créé avec succès.'], Response::HTTP_CREATED);
+            $request->image->move(public_path('images'),$imageName);
+            $requestData = $request->all();
+            $product = Product::create([
+                'name' => $requestData['name'],
+                'image' => $requestData['image'],
+                'category_id' => $requestData['category_id'],
+                'shortDescription' => $requestData['shortDescription'],
+                'longDescription' => $requestData['longDescription'],
+                'price' => $requestData['price'],
+                'stock' => $requestData['stock'],
+                'value' => false,
+            ]);
+            $product->save();
+        
+            error_log('Request Data: ' . json_encode($requestData));
+         
+    
+            return response()->json([
+                'product' => $product,
+                'message' => 'Produit créé avec succès.'
+            ], Response::HTTP_CREATED);
+        } catch (\Exception $e) {
+            error_log('Erreur lors de la création du produit : ' . $e->getMessage());
+    
+            return response()->json(['error' => 'Erreur lors de la création du produit.'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
     
     public function show(Product $productId)

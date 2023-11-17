@@ -32,32 +32,34 @@ export default function Header() {
     {
       title: "SKI ALPIN",
       slug: "ski-alpin",
-      description: "Description de la catégorie Ski Alpin",
+      description:
+        "Matériel de ski pour des descentes exceptionnelles sur les pistes",
     },
     {
       title: "SNOWBOARD",
       slug: "snowboard",
-      description: "Description de la catégorie Snowboard",
+      description: "Équipement complet pour une glisse parfaite sur la neige",
     },
     {
       title: "BÂTON",
       slug: "Baton",
-      description: "Description de la catégorie Ski de Randonnée",
+      description: "Bâtons de ski de randonnée pour une pratique sécurisée",
     },
     {
       title: "CHAUSSURES",
       slug: "chaussure",
-      description: "Description de la catégorie Ski de Fond",
+      description: "Chaussures de ski de fond pour une expérience optimale",
     },
     {
       title: "VÉLOS",
       slug: "velos",
-      description: "Description de la catégorie Vélos",
+      description: "Vélos de qualité pour toutes vos aventures cyclistes.",
     },
     {
       title: "SAC À DOS",
       slug: "sac-a-dos",
-      description: "Description de la catégorie Randonnée",
+      description:
+        "Pratique et stylé, l'accessoire idéal pour vos aventures quotidiennes",
     },
   ];
 
@@ -80,8 +82,8 @@ export default function Header() {
             <Search />
           </div>
         )}
-        <div className="flex justify-between items-center px-20">
-          <NavigationMenu>
+        <div className="flex justify-between items-center px-5 md:px-20">
+          <NavigationMenu className="z-20">
             <NavigationMenuList>
               <NavigationMenuItem>
                 <NavigationMenuLink asChild>
@@ -93,7 +95,7 @@ export default function Header() {
               <NavigationMenuItem>
                 <NavigationMenuTrigger>Boutique</NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
+                  <ul className=" grid  w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
                     {components.map((component) => (
                       <ListItem
                         key={component.slug}

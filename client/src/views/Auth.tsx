@@ -33,8 +33,6 @@ import ShowPassword from "../components/ShowPassword";
 import { Link, Navigate } from "react-router-dom";
 
 //Utils
-import { AiOutlineGoogle } from "react-icons/ai";
-import axiosClient from "@/lib/axios-client";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { useAppSelector } from "@/hook";
@@ -58,7 +56,7 @@ export default function Auth() {
   const { loading: loadingMerge, error: errorMerge } = useAppSelector(
     (state: RootState) => state.cart
   );
-  const [checkboxChecked, setCheckboxChecked] = useState(false);
+  const [isChecked, setIsChecked] = useState(false);
   const [variant, setVariant] = useState("login");
   const [errorCheckbox, setIsErrorCheckbox] = useState("");
   const [isError, setIsError] = useState("");
@@ -83,14 +81,10 @@ export default function Auth() {
   const mergeCartAfterLogin = async (cartId: string, authToken: string) => {
     if (authToken) {
       try {
-        const response = await dispatch(mergeCart(cartId, authToken));
-        console.log(response);
+        await dispatch(mergeCart(cartId, authToken));
 
         if (!loadingMerge && !errorMerge) {
           Cookies.remove("cart_id");
-          setIsErrorCheckbox("");
-          setCheckboxChecked(false);
-          console.log("merge");
         }
       } catch (error) {
         console.error("Erreur lors de la fusion du panier :", error);
@@ -104,8 +98,9 @@ export default function Auth() {
       password: form.getValues("password")?.toString(),
     };
     try {
-      if (!checkboxChecked) {
+      if (isChecked === false) {
         setIsErrorCheckbox("Veuillez accepter les termes et conditions");
+        console.log(isChecked);
         return;
       }
 
@@ -113,16 +108,16 @@ export default function Auth() {
       const cartId = Cookies.get("cart_id");
       const tokenFromCookies = Cookies.get("authToken");
       setAuthToken(tokenFromCookies);
+      setIsErrorCheckbox("");
+      setIsChecked(!isChecked);
       if (cartId) {
         mergeCartAfterLogin(cartId, authToken);
       }
-      setIsErrorCheckbox("");
-      setCheckboxChecked(!checkboxChecked);
     } catch (error) {
       console.error("Une erreur s'est produite lors de la connexion :", error);
       throw error;
     }
-  }, [dispatch, form, loadingLog, errorLog]);
+  }, [dispatch, form, isChecked, loadingLog, errorLog]);
 
   const onRegister = useCallback(async () => {
     const payload = {
@@ -132,15 +127,15 @@ export default function Auth() {
     };
 
     try {
-      if (!checkboxChecked) {
+      if (isChecked === false) {
         setIsErrorCheckbox("Veuillez accepter les termes et conditions");
+
         return;
       }
 
       dispatch(register(payload));
       setIsErrorCheckbox("");
-      setCheckboxChecked(!checkboxChecked);
-      onLogin();
+      setIsChecked(!isChecked);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         const response = error.response;
@@ -154,20 +149,11 @@ export default function Auth() {
         );
       }
     }
-  }, [form, dispatch, checkboxChecked, setIsError, onLogin]);
+  }, [form, dispatch, isChecked, setIsError, onLogin]);
 
   const handleClickCheckbox = useCallback(() => {
-    setCheckboxChecked(!checkboxChecked);
-  }, [checkboxChecked]);
-
-  const handleGoogleLogin = async () => {
-    try {
-      const response = await axiosClient.get("/login/google");
-      window.location.href = response.data;
-    } catch (error) {
-      console.error("Erreur lors de la connexion avec Google :", error);
-    }
-  };
+    setIsChecked(!isChecked);
+  }, [isChecked]);
 
   return (
     <>
@@ -175,16 +161,6 @@ export default function Auth() {
         <h2 className="text-2xl text-primary mb-2">
           {variant === "login" ? "Se connecter" : "S'inscrire"}
         </h2>
-        <div className="px-4 w-full md:w-1/2 xl:w-1/3 py-2">
-          <Button
-            onClick={handleGoogleLogin}
-            aria-label="connexion ou insription"
-            className="w-full h-12 flex gap-x-4 items-center"
-          >
-            <AiOutlineGoogle size={20} />
-            Google
-          </Button>
-        </div>
         <div className="w-full md:w-1/2 xl:w-1/3 p-4 flex flex-col items-center">
           <Form {...form}>
             <form
@@ -196,11 +172,7 @@ export default function Auth() {
               {isError ? (
                 <small className="text-red-500">{isError}</small>
               ) : null}
-              <div className="w-full flex items-center">
-                <div className="w-1/2 h-px bg-primary"></div>
-                <p className="px-8 flex justify-center items-center">Ou</p>
-                <div className="w-1/2 h-px bg-primary"></div>
-              </div>
+
               <div className="flex space-x-8 items-center cursor-pointer "></div>
               {variant === "register" && (
                 <>
@@ -258,7 +230,11 @@ export default function Auth() {
               />
               <div className="w-full items-top flexflex-col">
                 <div className="flex gap-x-2">
-                  <Checkbox id="terms1" onClick={handleClickCheckbox} />
+                  <Checkbox
+                    id="terms1"
+                    checked={isChecked}
+                    onClick={handleClickCheckbox}
+                  />
                   <div className="grid gap-1.5 leading-none">
                     <label
                       htmlFor="terms1"

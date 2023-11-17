@@ -22,7 +22,13 @@ export default function CardProduct({
         <Skeleton className="h-[350px] w-full" />
       ) : (
         <Link to={`/products/${categorySlug}/${product.id}`}>
-          <div className="h-[350px] w-full bg-primary"></div>
+          <figure className="h-[350px] bg-primary w-full">
+            <img
+              src={product.image}
+              alt={product.name}
+              className="object-cover"
+            />
+          </figure>
         </Link>
       )}
       <div className="p-2 space-y-2">

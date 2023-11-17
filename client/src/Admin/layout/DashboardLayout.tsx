@@ -15,7 +15,7 @@ export default function DashboardLayout() {
     <div id="dashboardLayout">
       <div className="content">
         <main className="flex">
-          <header className="w-1/5">
+          <header className="w-96">
             <Sidebar />
           </header>
           <div className="w-4/5 p-4">

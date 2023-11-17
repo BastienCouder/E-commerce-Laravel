@@ -24,6 +24,7 @@ import { Category } from "@/types/Product";
 import React, { useEffect, useState } from "react";
 import { deleteProduct, updateProduct } from "@/@redux/action/product.action";
 import axiosClient from "@/lib/axios-client";
+import FormProduct from "@/components/FormProduct";
 
 export default function Products() {
   const dispatch = useAppDispatch();
@@ -192,6 +193,7 @@ export default function Products() {
               Enregistrer
             </Button>
           )}
+          <FormProduct />
         </div>
         <div className="w-full flex justify-between overflow-y-auto h-full">
           <table className="w-full flex flex-col items-center justify-around space-y-2">

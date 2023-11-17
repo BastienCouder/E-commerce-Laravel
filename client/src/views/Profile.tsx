@@ -35,7 +35,7 @@ const Profile: React.FC = () => {
     <div className="p-4 md:px-20 space-y-4">
       {state.user && <h1>Bonjour, {state.user.name}</h1>}
 
-      <section>
+      <section className="overflow-x-auto w-full">
         <ul className="space-y-8">
           {order?.orderItems ? (
             order.orderItems.map((orderItem, index) => {
@@ -47,7 +47,7 @@ const Profile: React.FC = () => {
               return (
                 <li
                   key={index}
-                  className="w-[40rem] border-[1px] border-primary"
+                  className="md:w-[40rem] border-[1px] border-primary"
                 >
                   {!isOrderSelected && isLoading ? (
                     <>

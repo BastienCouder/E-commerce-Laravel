@@ -2,6 +2,7 @@ import { Dispatch } from "redux";
 import axiosClient from "@/lib/axios-client";
 import { Delivery } from "@/types/Delivery";
 import { authToken } from "@/lib/token";
+import { readCart } from "./cart.action";
 
 // READ
 // Action type constants
@@ -61,6 +62,7 @@ export const readDelivery = (): any => {
       });
 
       dispatch(readDeliverySuccess(response.data));
+      dispatch(readCart());
     } catch (error: any) {
       dispatch(readDeliveryError(error.message));
       console.error("Error fetching delivery:", error);

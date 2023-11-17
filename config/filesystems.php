@@ -29,7 +29,12 @@ return [
     */
 
     'disks' => [
-
+'public' => [
+        'driver' => 'local',
+        'root' => storage_path('app/public'),
+        'url' => env('APP_URL') . '/storage',
+        'visibility' => 'public',
+    ],
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app'),
@@ -71,6 +76,12 @@ return [
 
     'links' => [
         public_path('storage') => storage_path('app/public'),
+        public_path('images') => storage_path('app/images'),
+    ],
+
+    'uploads' => [
+        'driver' => 'local',
+        'root'   => public_path() . '/uploads',
     ],
 
 ];

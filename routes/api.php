@@ -76,11 +76,6 @@ Route::group(['prefix' => 'order'], function () {
 });
 
 
-Route::get('/login/google', 'GoogleController@redirectToProvider')->name('google.login');
-Route::get('/login/google/callback', 'GoogleController@handleProviderCallback');
-
-// Route::get('/login/google', [AuthController::class, 'redirectToGoogle']);
-// Route::get('/login/google/callback', [AuthController::class, 'handleGoogleCallback']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 

@@ -62,7 +62,7 @@ export default function Products() {
       />
       <section className="p-2">
         <h1 className="text-base">Catégorie : {categorySlug}</h1>
-        <ul className="w-full flex flex-wrap">
+        <ul className="w-full flex flex-wrap justify-center sm:justify-start">
           {filteredProducts.map((product: any, index: number) => (
             <CardProduct
               key={product.id || index}

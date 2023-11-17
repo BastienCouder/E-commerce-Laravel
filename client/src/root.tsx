@@ -25,11 +25,16 @@ export default function root() {
       name: "Snowboard",
       slug: "snowboard",
     },
-    { src: "./images/batons.jpg", alt: "Bâton", name: "Bâtons", slug: "baton" },
+    {
+      src: "./images/batons.jpg",
+      alt: "Bâton",
+      name: "Bâtons de skis",
+      slug: "baton",
+    },
     {
       src: "./images/shoes.jpg",
       alt: "Chaussures",
-      name: "Chaussures",
+      name: "Chaussures de skis",
       slug: "chaussure",
     },
     {
@@ -62,35 +67,44 @@ export default function root() {
     }
   }, [products]);
 
-  const valueProducts = isLoading
-    ? (Array.from({ length: 10 }).fill({}) as Product[])
-    : (products.filter(
-        (product: Product) => product.value === true || product.value === 1
-      ) as Product[]);
+  const valueProducts = products.filter(
+    (product: Product) => product.value === true || product.value === 1
+  ) as Product[];
 
   return (
     <>
       <Helmet>
-        <title>Titre par défaut</title>
-        <meta name="description" content="Description par défaut" />
+        <title>Accueil - e-commerce</title>
+        <meta
+          name="description"
+          content="Ceci est la meta-description de mon site e-commerce"
+        />
         <meta name="keywords" content="Mots-clés par défaut" />
         {iconUrl && <link rel="icon" href={iconUrl} type="image/svg+xml" />}
       </Helmet>
+
       <div className="space-y-2">
-        <section>
-          <figure className="relative h-[35rem]"></figure>
-          <figure className="z-20 absolute left-10 -bottom-20">
-            <img src="./images/snowboard.png" alt="" className="h-[25rem]" />
+        <section className="relative">
+          <figure className="z-10 absolute md:left-10 md:top-5">
+            <img
+              src="./images/snowboard.png"
+              alt=""
+              className="h-[10rem] md:h-[15rem] xl:h-[20rem]"
+            />
           </figure>
-          <figure className="z-20 absolute right-10  -bottom-0">
-            <img src="./images/telesiege.png" alt="" className="h-[20rem]" />
+          <figure className="z-10 absolute right-60 top-0">
+            <img
+              src="./images/telesiege.png"
+              alt=""
+              className="hidden xl:block xl:h-[15rem]"
+            />
           </figure>
         </section>
         <section className="relative flex justify-center md:justify-end py-8">
-          <ul className="z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+          <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
             {categories.map((category, index) => (
-              <li key={index} className="z-20 space-y-2">
-                <figure className="relative h-[16rem] lg:h-[20rem] w-[18rem] lg:w-[22rem]">
+              <li key={index} className="space-y-2">
+                <figure className="relative h-[16rem] xl:h-[20rem] w-[18rem] xl:w-[22rem]">
                   <img
                     src={category.src}
                     alt={category.alt}
@@ -103,27 +117,41 @@ export default function root() {
               </li>
             ))}
           </ul>
-          <figure className="z-10 absolute left-0 bottom-0">
-            <img src="./images/telepherique.png" alt="" className="h-[22rem]" />
+          <figure className="z-10 absolute left-0 -bottom-28 md:bottom-0">
+            <img
+              src="./images/telepherique.png"
+              alt=""
+              className="h-[10rem] md:h-[22rem]"
+            />
           </figure>
         </section>
 
         <section className="relative px-12 space-y-2 pt-4">
-          <figure className="z-10 absolute right-5 top-0">
-            <img src="./images/masque.png" alt="" className="h-[10rem]" />
-          </figure>
-          <h2 className="w-full text-xl flex justify-center">En ce moment</h2>
-          <ul className="w-full flex overflow-x-auto">
-            {valueProducts &&
-              valueProducts.map((product, index) => (
-                <CardProduct
-                  key={index}
-                  isLoading={false}
-                  product={product}
-                  categorySlug={product.name}
+          {valueProducts.length > 0 && (
+            <>
+              <figure className="z-10 absolute right-0 md:right-5 top-0">
+                <img
+                  src="./images/masque.png"
+                  alt=""
+                  className="h-[4rem] md:h-[8rem] xl: h-[10rem]"
                 />
-              ))}
-          </ul>
+              </figure>
+              <h2 className="w-full text-xl flex justify-center">
+                En ce moment
+              </h2>
+              <ul className="w-full flex overflow-x-auto">
+                {valueProducts &&
+                  valueProducts.map((product, index) => (
+                    <CardProduct
+                      key={index}
+                      isLoading={false}
+                      product={product}
+                      categorySlug={product.name}
+                    />
+                  ))}
+              </ul>
+            </>
+          )}
         </section>
       </div>
     </>

@@ -14,6 +14,7 @@ import Summary from "./views/Summary";
 import Orders from "./Admin/Orders";
 import Inventory from "./Admin/Inventory";
 import Root from "./root";
+import ThankYou from "./views/Thankyou";
 
 interface Route {
   path: string;
@@ -57,6 +58,10 @@ const router: Route[] = [
       {
         path: "summary",
         element: <Summary />,
+      },
+      {
+        path: "thankyou",
+        element: <ThankYou />,
       },
     ],
   },

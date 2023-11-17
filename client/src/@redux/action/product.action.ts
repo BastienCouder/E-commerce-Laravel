@@ -115,6 +115,8 @@ export const createProduct = (productData: any): any => {
         "/products",
         productData
       );
+      console.log(response.data);
+
       dispatch(createProductSuccess(response.data));
       dispatch(readAllProducts());
     } catch (error: any) {

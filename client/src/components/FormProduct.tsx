@@ -10,6 +10,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -17,7 +25,11 @@ import { ProductSchema, ProductValues, defaultProductValues } from "@/lib/zod";
 import { useAuth } from "@/context/authContext";
 import { createProduct } from "@/@redux/action/product.action";
 import { useAppDispatch } from "@/hook";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { Textarea } from "./ui/textarea";
+import { $CombinedState } from "redux";
+import axiosClient from "@/lib/axios-client";
+import { Category } from "@/types/Product";
 
 export default function FormProduct() {
   const { state } = useAuth();
@@ -28,6 +40,21 @@ export default function FormProduct() {
     defaultValues: defaultProductValues,
   });
 
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axiosClient.get("/category");
+        setCategories(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   const [formVisible, setFormVisible] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -37,18 +64,25 @@ export default function FormProduct() {
       return;
     }
 
-    const payload = {
-      name: form.getValues("name")?.toString(),
-      image: form.getValues("image")?.toString(),
-      category_id: form.getValues("category_id")?.toString(),
-      shortDescription: form.getValues("shortDescription")?.toString(),
-      longDescription: form.getValues("longDescription")?.toString(),
-      price: form.getValues("price")?.toString(),
-      stock: form.getValues("stock")?.toString(),
-    };
+    const formData = new FormData();
+    formData.append("name", form.getValues("name")?.toString());
+    formData.append("category_id", form.getValues("category_id")?.toString());
+    formData.append(
+      "shortDescription",
+      form.getValues("shortDescription")?.toString()
+    );
+    formData.append(
+      "longDescription",
+      form.getValues("longDescription")?.toString()
+    );
+    formData.append("price", form.getValues("price")?.toString());
+    formData.append("stock", form.getValues("stock")?.toString());
+
+    const imageFile = form.getValues("image");
+    formData.append("image", imageFile[0]);
 
     try {
-      dispatch(createProduct(payload));
+      await dispatch(createProduct(formData));
       toggleFormVisibility();
       toast.success("Produit ajouté avec succès");
       form.reset();
@@ -76,10 +110,11 @@ export default function FormProduct() {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="w-full space-y-4"
+            className="w-full mt-4 space-y-2"
+            encType="multipart/form-data"
           >
             {error ? <small className="text-red-500">{error}</small> : null}
-            <div className="w-full flex flex-col sm:flex-row gap-6 sm:gap-12">
+            <div className="w-full flex flex-col sm:flex-row gap-6 sm:gap-24">
               {/* name */}
               <FormField
                 control={form.control}
@@ -102,7 +137,7 @@ export default function FormProduct() {
                   <FormItem className="w-full">
                     <FormLabel>Image*</FormLabel>
                     <FormControl>
-                      <Input placeholder="URL de l'image" {...field} />
+                      <Input type="file" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -115,65 +150,26 @@ export default function FormProduct() {
                 render={({ field }) => (
                   <FormItem className="w-full">
                     <FormLabel>Catégorie*</FormLabel>
-                    <FormControl>
-                      <Input placeholder="ID de la catégorie" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              {/* size_id */}
-              <FormField
-                control={form.control}
-                name="size_id"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>Taille*</FormLabel>
-                    <FormControl>
-                      <Input placeholder="ID de la taille" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              {/* value */}
-              <FormField
-                control={form.control}
-                name="value"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>Valeur*</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Valeur" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              {/* image_mime */}
-              <FormField
-                control={form.control}
-                name="image_mime"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>Type MIME de l'image*</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Type MIME" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              {/* image_size */}
-              <FormField
-                control={form.control}
-                name="image_size"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>Taille de l'image*</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Taille de l'image" {...field} />
-                    </FormControl>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a verified email to display" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {categories.map((category) => (
+                          <SelectItem
+                            key={category.id}
+                            value={String(category.id)}
+                          >
+                            {category.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -188,7 +184,7 @@ export default function FormProduct() {
                   <FormItem className="w-full">
                     <FormLabel>Description courte*</FormLabel>
                     <FormControl>
-                      <Input placeholder="Description courte" {...field} />
+                      <Textarea placeholder="Description courte" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -202,7 +198,7 @@ export default function FormProduct() {
                   <FormItem className="w-full">
                     <FormLabel>Description longue*</FormLabel>
                     <FormControl>
-                      <Input placeholder="Description longue" {...field} />
+                      <Textarea placeholder="Description longue" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -239,7 +235,7 @@ export default function FormProduct() {
             </div>
             <div className="pt-4">
               <Button aria-label="ajouter" type="submit">
-                Ajouter
+                Ajouter un produit
               </Button>
             </div>
           </form>

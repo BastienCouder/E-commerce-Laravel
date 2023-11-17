@@ -42,8 +42,8 @@ export default function ProductDetail() {
 
   return (
     <>
-      <section className="w-full flex p-4">
-        <div className="w-3/5 p-4">
+      <section className="w-full flex flex-col md:flex-row p-4">
+        <div className="md:w-3/5 p-4">
           {isLoading ? (
             <div className="flex space-x-4">
               <Skeleton className="min-w-[200px] w-full xl:w-1/2 min-h-[400px]" />
@@ -56,7 +56,7 @@ export default function ProductDetail() {
             </div>
           )}
         </div>
-        <div className="w-2/5 p-4 space-y-4">
+        <div className="md:w-2/5 p-4 space-y-4">
           {isLoading ? (
             <Skeleton className="w-1/2 h-8" />
           ) : (

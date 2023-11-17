@@ -50,8 +50,6 @@ export default function Summary() {
     delivery,
   ]);
 
-  console.log(cart);
-
   return (
     <>
       <div className="p-4 md:px-20 space-y-2">

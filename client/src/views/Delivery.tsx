@@ -22,23 +22,21 @@ export default function Delivery() {
   );
 
   if (error) {
-    <ErrorPage />;
+    return <ErrorPage />;
   }
 
-  if (loading) {
-    <Loading />;
-  }
-
-  const defaultDeliveryItem = delivery?.deliveryItems.find(
+  const defaultDeliveryItem = delivery?.deliveryItems?.find(
     (item) => item.Default
   );
+
   const [selectedDeliveryItem, setSelectedDeliveryItem] = useState<
     string | undefined
   >(defaultDeliveryItem ? String(defaultDeliveryItem.id) : undefined);
 
   useEffect(() => {
-    dispatch(readDelivery());
-    console.log(delivery);
+    if (!loading && !error && !delivery) {
+      dispatch(readDelivery());
+    }
   }, [dispatch]);
 
   const handleDeliveryChange = (id: number | undefined) => {
@@ -77,15 +75,15 @@ export default function Delivery() {
     <div className="p-4 md:px-20 space-y-2">
       <h1>Livraison</h1>
       <section className="flex w-full">
-        <div className="w-1/2 space-y-4">
+        <div className="md:w-1/2 space-y-4">
           <FormDelivery />
-          <div className="w-1/2">
-            <ul className="space-y-4 w-[35rem]">
+          <div className="w-[20rem]">
+            <ul className="space-y-4 w-full md:w-[35rem]">
               {delivery?.deliveryItems ? (
                 delivery.deliveryItems.map((deliveryItem) => (
                   <li
                     key={deliveryItem.id}
-                    className="flex text-sm border-2 px-8 py-6 border-primary"
+                    className="overflow-x-auto flex text-sm border-2 px-8 py-6 border-primary"
                   >
                     <div className="w-60">
                       <div className="flex flex-col font-bold">
