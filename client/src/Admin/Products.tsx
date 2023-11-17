@@ -1,3 +1,15 @@
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
 import { readAllProducts } from "@/@redux/action/products.action";
 import { RootState } from "@/@redux/store";
 import PriceTag from "@/components/PriceTag";
@@ -6,14 +18,24 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { useAppDispatch, useAppSelector } from "@/hook";
-import { formatDescription, formatLongueDescription } from "@/lib/format";
+import { formatLongueDescription } from "@/lib/format";
 import { Category, Product } from "@/types/Product";
 
 import React, { useEffect, useState } from "react";
+import { deleteProduct, updateProduct } from "@/@redux/action/product.action";
+import axiosClient from "@/lib/axios-client";
 
-const Products = () => {
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { SelectGroup } from "@radix-ui/react-select";
+
+export default function Products() {
   const dispatch = useAppDispatch();
-
   const { products, loading, error } = useAppSelector(
     (state: RootState) => state.products
   );
@@ -39,31 +61,69 @@ const Products = () => {
     }));
   };
 
-  const handleDeleteSelected = () => {
-    if (
-      window.confirm(
-        "Êtes-vous sûr de vouloir supprimer les produits sélectionnés?"
-      )
-    ) {
-      console.log(
-        `Supprimer les produits avec les ID ${selectedProducts.join(", ")}`
-      );
-      setSelectedProducts([]);
-    }
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axiosClient.get("/category");
+        setCategories(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
+  }, []);
+  const [selectedCategory, setSelectedCategory] = useState("");
+
+  const handleCategorySelect = (categoryId: string) => {
+    setSelectedCategory(categoryId);
+  };
+
+  const handleDeleteCanceled = () => {
+    setSelectedProducts([]);
+  };
+
+  const handleDeleteConfirmed = () => {
+    selectedProducts.forEach((productId) => {
+      dispatch(deleteProduct(productId));
+    });
+    setSelectedProducts([]);
+    setEditMode(null);
+    setEditedFields({});
   };
 
   const handleEditSelected = () => {
-    setEditMode(selectedProducts.length > 0 ? selectedProducts[0] : null);
-    setEditedFields({});
+    if (selectedProducts.length > 0) {
+      setSelectedProducts([]);
+      setEditMode(selectedProducts[0]);
+      setEditedFields({});
+    }
   };
 
   const handleSaveChanges = () => {
-    console.log("Sauvegarder les modifications :", editedFields);
-    // Ajoutez la logique pour sauvegarder les modifications dans votre backend
-    // Réinitialisez le mode d'édition et les champs modifiés
-    setEditMode(null);
-    setSelectedProducts([]);
-    setEditedFields({});
+    if (editMode !== null) {
+      const productId = selectedProducts[0];
+      const productData = { ...editedFields[productId] };
+
+      if (productId !== undefined && productData !== undefined) {
+        dispatch(updateProduct(productId, productData));
+        setEditMode(null);
+        setSelectedProducts([]);
+        setEditedFields({});
+      } else {
+        console.error("Erreur: productId ou productData est undefined");
+      }
+    }
+  };
+
+  const handleCheckboxChange = (productId: number) => {
+    if (selectedProducts.includes(productId)) {
+      setSelectedProducts((prev) => prev.filter((id) => id !== productId));
+    } else {
+      setSelectedProducts((prev) => [...prev, productId]);
+    }
   };
 
   const handleInputChange = (
@@ -80,16 +140,6 @@ const Products = () => {
     }));
   };
 
-  const handleCheckboxChange = (productId: number) => {
-    setSelectedProducts((prev) => {
-      if (prev.includes(productId)) {
-        return prev.filter((id) => id !== productId);
-      } else {
-        return [...prev, productId];
-      }
-    });
-  };
-
   return (
     <>
       <div className="w-full space-y-4">
@@ -97,9 +147,31 @@ const Products = () => {
           <Button variant="secondary" onClick={() => handleEditSelected()}>
             Modifier
           </Button>
-          <Button variant="secondary" onClick={() => handleDeleteSelected()}>
-            Supprimer
-          </Button>
+          {!editMode && (
+            <AlertDialog>
+              <AlertDialogTrigger>
+                <Button variant="secondary" disabled={editMode !== null}>
+                  Supprimer
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Êtes-vous sûr ?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Cette action ne peut pas être annulée.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel onClick={handleDeleteCanceled}>
+                    Annuler
+                  </AlertDialogCancel>
+                  <AlertDialogAction onClick={handleDeleteConfirmed}>
+                    Continuer
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
           {editMode && (
             <Button variant="secondary" onClick={() => handleSaveChanges()}>
               Enregistrer
@@ -130,7 +202,7 @@ const Products = () => {
                         <div>
                           <input
                             type="checkbox"
-                            className="w-4 h-4 border-2 border-primary ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
+                            className={`${editMode !== null ? "disabled" : ""}`}
                             id={`select-${product.id}`}
                             checked={selectedProducts.includes(product.id)}
                             onChange={() => handleCheckboxChange(product.id)}
@@ -154,17 +226,28 @@ const Products = () => {
                       </td>
                       <td className="w-1/6 flex justify-center items-center">
                         {editMode === product.id ? (
-                          <Input
-                            className="w-32"
-                            value={
-                              (editedFields[product.id]?.category as
-                                | string
-                                | undefined) ?? product.category.name
-                            }
-                            onChange={(e) =>
-                              handleInputChange(e, product.id, "category")
-                            }
-                          />
+                          <Select>
+                            <SelectTrigger className="w-[160px]">
+                              <SelectValue
+                                placeholder={product.category.name}
+                              />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectGroup>
+                                {categories.map((category) => (
+                                  <SelectItem
+                                    key={category.id}
+                                    value={String(category.id)}
+                                    onSelect={() =>
+                                      handleCategorySelect(String(category.id))
+                                    }
+                                  >
+                                    {category.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectGroup>
+                            </SelectContent>
+                          </Select>
                         ) : (
                           product.category.name
                         )}
@@ -265,6 +348,4 @@ const Products = () => {
       </div>
     </>
   );
-};
-
-export default Products;
+}

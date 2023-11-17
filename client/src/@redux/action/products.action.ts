@@ -1,8 +1,6 @@
 import { Dispatch } from "redux";
 import axiosClient from "@/lib/axios-client";
 import { Product } from "@/types/Product";
-import { RootState } from "../store";
-import { ThunkAction } from "redux-thunk";
 
 // Action type constants
 export const READ_ALL_PRODUCTS_REQUEST = "READ_ALL_PRODUCTS_REQUEST";

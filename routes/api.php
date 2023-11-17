@@ -19,16 +19,24 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-Route::get('/categories', [CategoryController::class, 'index']);
 
 
 Route::group(['prefix' => 'products'], function () {
+    // Route::middleware(['auth:sanctum'])->group(function () {
+        Route::post('/', [ProductController::class, 'store']);
+        Route::put('/update-quantity/{cartItemId}',  [CartController::class, 'update']);
+        Route::put('/{productId}', [ProductController::class, 'update']);
+        Route::delete('/{productId}', [ProductController::class, 'destroy']);
+    // });
+
     Route::get('/', [ProductController::class, 'read']);
-    Route::post('/', [ProductController::class, 'store']);
-    Route::get('/{product}', [ProductController::class, 'show']);
-    Route::put('/{id}', [ProductController::class, 'update']);
-    Route::delete('/{id}', [ProductController::class, 'destroy']);
+    Route::get('/{productId}', [ProductController::class, 'show']);
 });
+
+Route::group(['prefix' => 'category'], function () {
+    Route::get('/', [CategoryController::class, 'read']);
+});
+
 
 Route::group(['prefix' => 'cart'], function () {
     

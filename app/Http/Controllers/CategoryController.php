@@ -29,7 +29,7 @@ class CategoryController extends Controller
         }
     }
 
-    public function index()
+    public function read()
     {
         $categories = category::all();
         return response()->json($categories);

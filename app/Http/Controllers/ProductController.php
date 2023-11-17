@@ -60,31 +60,31 @@ class ProductController extends Controller
         return response()->json($product, Response::HTTP_OK);
     }
     
-    public function edit(Product $product)
+    public function update(Request $request, Product $productId)
     {
-        return response()->json(['message' => 'Method not allowed for editing.'], Response::HTTP_METHOD_NOT_ALLOWED);
-    }
-    
-    public function update(Request $request, Product $product)
-    {
-        $request->validate([
-            'title' => 'required|max:255',
-            'price' => 'required|numeric',
-            // ... d'autres règles de validation selon vos besoins
-        ]);
-    
-        $product->update($request->all());
-    
-        return response()->json(['product' => $product, 'message' => 'Produit mis à jour avec succès.'], Response::HTTP_OK);
-    }
-    
-    public function destroy(Product $product)
-    {
-        $product->delete();
-    
-        return response()->json(['message' => 'Produit supprimé avec succès.'], Response::HTTP_NO_CONTENT);
-    }    
+        try {
+            $productId->update($request->all());
 
+            return response()->json(['product' => $productId, 'message' => 'Produit mis à jour avec succès.'], Response::HTTP_OK);
+        } catch (\Exception $e) {
+        
+            return response()->json(['error' => $e->getMessage()], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+    }
+    
+    public function destroy(Product $productId)
+    {
+        try {
+            $productId->delete();
+            \Log::error('Produit supprimé avec succès. ID : ' . $productId->id);
+    
+            return response()->json(['message' => 'Produit supprimé avec succès.'], Response::HTTP_NO_CONTENT);
+        } catch (\Exception $e) {
+            \Log::error('Erreur lors de la suppression du produit. ID : ' . $productId->id . ' Erreur : ' . $e->getMessage());
+    
+            return response()->json(['message' => 'Erreur lors de la suppression du produit.'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
     // public function checkCategoryProducts()
     // {
     //     $categoryId = 1; // Remplacez 1 par l'ID de la catégorie que vous souhaitez vérifier
