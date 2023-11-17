@@ -37,7 +37,7 @@ const Profile: React.FC = () => {
 
       <section>
         <ul className="space-y-8">
-          {order?.orderItems &&
+          {order?.orderItems ? (
             order.orderItems.map((orderItem, index) => {
               const dateString = orderItem.created_at;
               const dateValue = new Date(dateString);
@@ -49,7 +49,7 @@ const Profile: React.FC = () => {
                   key={index}
                   className="w-[40rem] border-[1px] border-primary"
                 >
-                  {!isOrderSelected ? (
+                  {!isOrderSelected && isLoading ? (
                     <>
                       <div className="flex items-center h-10 px-4 py-2 w-full bg-primary">
                         <p className="font-bold uppercase text-sm text-white">
@@ -221,7 +221,10 @@ const Profile: React.FC = () => {
                   )}
                 </li>
               );
-            })}
+            })
+          ) : (
+            <div className="h-[16rem]">Aucune commandes</div>
+          )}
         </ul>
       </section>
     </div>

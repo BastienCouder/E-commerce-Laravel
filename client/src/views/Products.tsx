@@ -8,6 +8,7 @@ import { Product } from "@/types/Product";
 import { removeAccents } from "@/lib/format";
 import ErrorPage from "@/error-page";
 import { RootState } from "@/@redux/store";
+import { useSearch } from "@/context/searchContext";
 
 export default function Products() {
   const { categorySlug } = useParams<{ categorySlug: string }>();
@@ -16,9 +17,10 @@ export default function Products() {
   const { products, loading, error } = useAppSelector(
     (state: RootState) => state.products
   );
+  const { searchTerm } = useSearch();
 
   if (error) {
-    <ErrorPage />;
+    return <ErrorPage />;
   }
 
   useEffect(() => {
@@ -43,6 +45,14 @@ export default function Products() {
           ) === categorySlug?.toLowerCase()
       );
 
+  const filteredProducts: Product[] = categoryProducts.filter(
+    (product: any): product is Product =>
+      product.name &&
+      removeAccents(product.name.toLowerCase()).includes(
+        removeAccents(searchTerm.toLowerCase())
+      )
+  );
+
   return (
     <>
       <MetaData
@@ -53,7 +63,7 @@ export default function Products() {
       <section className="p-2">
         <h1 className="text-base">Catégorie : {categorySlug}</h1>
         <ul className="w-full flex flex-wrap">
-          {categoryProducts.map((product: any, index: number) => (
+          {filteredProducts.map((product: any, index: number) => (
             <CardProduct
               key={product.id || index}
               isLoading={isLoading}

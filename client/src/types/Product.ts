@@ -4,7 +4,7 @@ export interface Product {
   image: string;
   image_mime: string;
   price: number;
-  value: boolean;
+  value?: boolean | number;
   category: Category | undefined;
   shortDescription: string;
   longDescription: string;

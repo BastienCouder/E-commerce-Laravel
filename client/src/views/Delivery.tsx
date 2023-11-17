@@ -81,7 +81,7 @@ export default function Delivery() {
           <FormDelivery />
           <div className="w-1/2">
             <ul className="space-y-4 w-[35rem]">
-              {delivery?.deliveryItems &&
+              {delivery?.deliveryItems ? (
                 delivery.deliveryItems.map((deliveryItem) => (
                   <li
                     key={deliveryItem.id}
@@ -131,7 +131,10 @@ export default function Delivery() {
                       </p>
                     </div>
                   </li>
-                ))}
+                ))
+              ) : (
+                <div className="h-[11rem]"></div>
+              )}
             </ul>
           </div>
           {delivery?.deliveryItems && delivery.deliveryItems.length > 0 ? (

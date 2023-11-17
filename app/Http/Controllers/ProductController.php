@@ -58,8 +58,6 @@ class ProductController extends Controller
     
     public function show(Product $productId)
     {
-        error_log('Produit supprimé avec succès. ID : ' . $productId);
-
         return response()->json($productId, Response::HTTP_OK);
     }
     

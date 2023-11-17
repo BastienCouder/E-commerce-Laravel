@@ -1,9 +1,8 @@
-import { readAllOrderItems, readOrder } from "@/@redux/action/order.action";
+import { readAllOrderItems } from "@/@redux/action/order.action";
 import { RootState } from "@/@redux/store";
 import { useAppDispatch, useAppSelector } from "@/hook";
 import formatPrice, { formatDate, formatDescription } from "@/lib/format";
-import { Separator } from "@radix-ui/react-separator";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Orders() {
   const dispatch = useAppDispatch();

@@ -53,7 +53,6 @@ export const readProduct = (productId: string): any => {
 
       const response = await axiosClient.get<Product>(`/products/${productId}`);
       dispatch(readProductSuccess(response.data));
-      console.log(response.data);
     } catch (error: any) {
       dispatch(readProductError(error.message));
       console.error("Error fetching products:", error);

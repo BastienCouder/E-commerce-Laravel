@@ -6,9 +6,9 @@ import { RouterProvider } from "react-router-dom";
 import router from "./router";
 
 // DevTools
-import App from "./views/Home.tsx";
 import { store } from "./@redux/store.ts";
 import { AuthProvider } from "./context/authContext.tsx";
+import { SearchProvider } from "./context/searchContext.tsx";
 
 const rootElement = document.getElementById("root");
 
@@ -18,8 +18,9 @@ if (rootElement) {
     <React.StrictMode>
       <Provider store={store}>
         <AuthProvider>
-          <RouterProvider router={router} />
-          <App />
+          <SearchProvider>
+            <RouterProvider router={router} />
+          </SearchProvider>
         </AuthProvider>
       </Provider>
     </React.StrictMode>

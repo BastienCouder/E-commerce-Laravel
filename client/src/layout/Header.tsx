@@ -35,19 +35,19 @@ export default function Header() {
       description: "Description de la catégorie Ski Alpin",
     },
     {
-      title: "SKI DE RANDONNÉE",
-      slug: "ski-de-randonnee",
-      description: "Description de la catégorie Ski de Randonnée",
-    },
-    {
-      title: "SKI DE FOND",
-      slug: "ski-de-fond",
-      description: "Description de la catégorie Ski de Fond",
-    },
-    {
       title: "SNOWBOARD",
       slug: "snowboard",
       description: "Description de la catégorie Snowboard",
+    },
+    {
+      title: "BÂTON",
+      slug: "Baton",
+      description: "Description de la catégorie Ski de Randonnée",
+    },
+    {
+      title: "CHAUSSURES",
+      slug: "chaussure",
+      description: "Description de la catégorie Ski de Fond",
     },
     {
       title: "VÉLOS",
@@ -55,8 +55,8 @@ export default function Header() {
       description: "Description de la catégorie Vélos",
     },
     {
-      title: "RANDONNÉE",
-      slug: "randonnee",
+      title: "SAC À DOS",
+      slug: "sac-a-dos",
       description: "Description de la catégorie Randonnée",
     },
   ];

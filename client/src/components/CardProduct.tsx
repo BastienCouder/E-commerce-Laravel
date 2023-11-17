@@ -38,8 +38,7 @@ export default function CardProduct({
               <h2>{product.name}</h2>
               <p>{formatPrice(product.price, "EUR")}</p>
               <p className="h-16">
-                Description courte :
-                {formatDescription(product.shortDescription)}
+                Description courte :{product.shortDescription}
               </p>
             </div>
             <Button className="w-full">Ajouter au panier</Button>

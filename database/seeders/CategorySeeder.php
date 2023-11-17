@@ -16,10 +16,10 @@ class CategorySeeder extends Seeder
     public function run()
     {
   Category::create(['name' => 'Ski Alpin']);
-  Category::create(['name' => 'Ski de Randonnée']);
-  Category::create(['name' => 'Ski de Fond']);
+  Category::create(['name' => 'Bâton']);
+  Category::create(['name' => 'Chaussures']);
   Category::create(['name' => 'Vélos']);
   Category::create(['name' => 'Snowboard']);
-  Category::create(['name' => 'Randonnée']);
+  Category::create(['name' => 'Sac à dos']);
     }
 }
