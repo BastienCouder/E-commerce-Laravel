@@ -18,9 +18,6 @@ return new class extends Migration
             $table->string('name', 2000);
             $table->string('image', 2000)->nullable();
             $table->foreignIdFor(Category::class, 'category_id')->nullable();
-            $table->foreignIdFor(Size::class, 'size_id')->nullable();
-            $table->string('image_mime')->nullable();
-            $table->integer('image_size')->nullable();
             $table->longText('shortDescription')->nullable();
             $table->longText('longDescription')->nullable();
             $table->decimal('price', 10, 2);

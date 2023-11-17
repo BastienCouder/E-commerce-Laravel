@@ -44,7 +44,7 @@ export default function Orders() {
               <th className="w-1/6">Actions</th>
             </tr>
           </thead>
-          <tbody className="w-full flex flex-col items-center justify-center space-y-2">
+          <tbody className="w-full flex flex-col items-center justify-center">
             {orderItems &&
               orderItems.map((orderItem, index) => {
                 const dateString = orderItem.created_at;
@@ -53,7 +53,11 @@ export default function Orders() {
                 const isOrderSelected = selectedOrderIndex === index;
                 return (
                   <React.Fragment key={orderItem.id}>
-                    <tr className="w-full flex justify-start">
+                    <tr
+                      className={`w-full py-2 flex justify-start ${
+                        orderItem.status === "Livré" ? "bg-green-500/20" : ""
+                      }`}
+                    >
                       <td className="w-1/6 flex justify-center items-center">
                         {orderItem.order_number}
                       </td>
@@ -64,10 +68,13 @@ export default function Orders() {
                       <td className="w-1/6 flex justify-center items-center">
                         {editableStatus === String(index) ? (
                           <select
-                            value={orderItem.status ? "true" : "false"}
+                            value={
+                              editableStatus === String(index)
+                                ? orderItem.status.toString()
+                                : ""
+                            }
                             onChange={(e) => {
                               const newStatus = e.target.value;
-
                               dispatch(
                                 updateOrderItemStatus(orderItem.id, newStatus)
                               );
@@ -75,13 +82,11 @@ export default function Orders() {
                             }}
                             className="border-2 relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 px-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                           >
-                            <option value="true">En attente</option>
-                            <option value="false">Livré</option>
+                            <option value="En attente">En attente</option>
+                            <option value="Livré">Livré</option>
                           </select>
-                        ) : orderItem.status ? (
-                          "En attente"
                         ) : (
-                          "Livré"
+                          <span>{orderItem.status}</span>
                         )}
                       </td>
 
@@ -109,7 +114,7 @@ export default function Orders() {
                     <Separator className="mx-20" />
 
                     {isOrderSelected && (
-                      <section className="w-1/2 my-20 border-2">
+                      <section className="w-1/2 my-4 border-2">
                         <div className="flex flex-col justify-center h-20 gap-1 px-4 py-2 w-full bg-primary text-white">
                           <p className="font-bold uppercase text-sm">
                             Commande n°{orderItem.order_number}

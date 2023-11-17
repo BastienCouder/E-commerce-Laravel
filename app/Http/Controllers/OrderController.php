@@ -122,7 +122,7 @@ class OrderController extends Controller
                         'cart_id' => $cartId,
                         'deliveryItem_id' => $deliveryItemId,
                         'isPaid' => false,
-                        'status' => 'en_attente',
+                        'status' => 'En attente',
                         'order_number' => $orderNumber,
                     ]);
     
@@ -145,17 +145,18 @@ class OrderController extends Controller
             return response()->json(['message' => 'Une erreur s\'est produite'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-    public function updateStatus(Request $request, $orderId)
+
+    public function updateStatus(Request $request, $orderItemId)
     {
         $newStatus = $request->input('newStatus');
-        $order = Order::find($orderId);
-
-        if (!$order) {
-            return response()->json(['error' => 'Order not found'], 404);
+        $orderItem = OrderItem::find($orderItemId);
+    
+        if (!$orderItem) {
+            return response()->json(['error' => 'Order Item not found'], 404);
         }
-        $order->status = $newStatus;
-        $order->save();
-
+        $orderItem->status = $newStatus;
+        $orderItem->save();
+    
         return response()->json(['newStatus' => $newStatus]);
     }
 

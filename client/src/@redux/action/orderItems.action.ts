@@ -102,15 +102,15 @@ export const updateOrderItemStatusError = (
 });
 
 export const updateOrderItemStatus = (
-  orderId: number,
+  OrderItemId: number,
   newStatus: string
 ): any => {
   return async (dispatch: Dispatch) => {
     try {
       dispatch(updateOrderItemStatusRequest());
 
-      await axiosClient.patch(
-        `/order/update-status/${orderId}`,
+      const response = await axiosClient.patch(
+        `/order/update-status/${OrderItemId}`,
         {
           newStatus,
         },
@@ -120,6 +120,7 @@ export const updateOrderItemStatus = (
           },
         }
       );
+      console.log(response.data);
 
       dispatch(updateOrderItemStatusSuccess());
       dispatch(readAllOrderItems());

@@ -143,12 +143,87 @@ export const DeliverySchema = z.object({
     .max(20),
 });
 
+export const ProductSchema = z.object({
+  name: z
+    .string({
+      required_error: "Le nom du produit est requis",
+      invalid_type_error:
+        "Le nom du produit doit être une chaîne de caractères",
+    })
+    .min(2, {
+      message: "Le nom du produit doit comporter au moins 2 caractères.",
+    })
+    .max(50),
+  image: z
+    .string({
+      required_error: "L'URL de l'image du produit est requis",
+      invalid_type_error:
+        "L'URL de l'image du produit doit être une chaîne de caractères",
+    })
+    .url({
+      message: "L'URL de l'image du produit n'est pas valide",
+    }),
+  category_id: z.string({
+    required_error: "L'ID de catégorie du produit est requis",
+    invalid_type_error:
+      "L'ID de catégorie du produit doit être une chaîne de caractères",
+  }),
+  size_id: z.string({
+    required_error: "L'ID de taille du produit est requis",
+    invalid_type_error:
+      "L'ID de taille du produit doit être une chaîne de caractères",
+  }),
+  value: z.string({
+    required_error: "La valeur du produit est requise",
+    invalid_type_error:
+      "La valeur du produit doit être une chaîne de caractères",
+  }),
+  image_mime: z.string({
+    required_error: "Le type MIME de l'image du produit est requis",
+    invalid_type_error:
+      "Le type MIME de l'image du produit doit être une chaîne de caractères",
+  }),
+  image_size: z.string({
+    required_error: "La taille de l'image du produit est requise",
+    invalid_type_error:
+      "La taille de l'image du produit doit être une chaîne de caractères",
+  }),
+  shortDescription: z
+    .string({
+      required_error: "La description courte du produit est requise",
+      invalid_type_error:
+        "La description courte du produit doit être une chaîne de caractères",
+    })
+    .max(250),
+  longDescription: z.string({
+    required_error: "La description longue du produit est requise",
+    invalid_type_error:
+      "La description longue du produit doit être une chaîne de caractères",
+  }),
+  price: z
+    .string({
+      required_error: "Le prix du produit est requis",
+      invalid_type_error:
+        "Le prix du produit doit être une chaîne de caractères",
+    })
+    .min(1),
+  stock: z
+    .string({
+      required_error: "Le stock du produit est requis",
+      invalid_type_error:
+        "Le stock du produit doit être une chaîne de caractères",
+    })
+    .min(1),
+});
+
 export type RegisterValues = z.infer<typeof RegisterSchema>;
 export type LoginValues = z.infer<typeof LoginSchema>;
 export type AccountFormValues = z.infer<typeof AccountFormSchema>;
+export type ProductValues = z.infer<typeof ProductSchema>;
 export type DeliveryValues = z.infer<typeof DeliverySchema>;
 
 export const defaultRegisterValues: Partial<RegisterValues> = {};
 export const defaultLoginValues: Partial<LoginValues> = {};
 export const defaultAccountValues: Partial<AccountFormValues> = {};
+export const defaultProductValues: Partial<ProductValues> = {};
 export const defaultDeliveryValues: Partial<DeliveryValues> = {};
