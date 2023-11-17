@@ -36,6 +36,7 @@ export default function ProductDetail() {
     if (productId && !loading && !error) {
       dispatch(readProduct(productId));
     }
+    console.log(product);
   }, [dispatch, productId]);
 
   useEffect(() => {

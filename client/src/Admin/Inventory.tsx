@@ -1,3 +1,4 @@
+import { updateQuantity } from "@/@redux/action/product.action";
 import { readAllProducts } from "@/@redux/action/products.action";
 import { RootState } from "@/@redux/store";
 import { Button } from "@/components/ui/button";
@@ -19,7 +20,14 @@ export default function Inventory() {
   }, [dispatch, products]);
 
   const handleUpdateQuantity = (cartItemId: number, newQuantity: number) => {
-    dispatch(updateQuantity(cartItemId, newQuantity));
+    if (cartItemId && newQuantity) {
+      console.log(newQuantity);
+      console.log(cartItemId);
+
+      dispatch(updateQuantity(cartItemId, newQuantity));
+    } else {
+      console.error("Une erreur s'est produite");
+    }
   };
 
   return (
@@ -45,7 +53,7 @@ export default function Inventory() {
                     <td className="w-1/6 flex justify-center items-center">
                       {product.name}
                     </td>
-                    <td className="w-1/6 flex justify-center items-center">
+                    <td className="w-1/6 flex justify-center items-center space-x-2">
                       <Button
                         className="flex justify-center items-center h-5 w-4"
                         onClick={() =>

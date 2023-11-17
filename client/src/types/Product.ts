@@ -4,7 +4,8 @@ export interface Product {
   image: string;
   image_mime: string;
   price: number;
-  category: Category;
+  value: boolean;
+  category: Category | undefined;
   shortDescription: string;
   longDescription: string;
   stock: number;
@@ -20,3 +21,7 @@ export interface Size {
   id: number;
   name: string;
 }
+
+export type EditedFields = {
+  [key: number]: Partial<any>;
+};

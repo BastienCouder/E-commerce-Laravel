@@ -8,6 +8,7 @@ export interface Order {
   cart_id?: number;
   orderItems: OrderItem[];
   order: Order;
+  data: Order;
 }
 
 // OrderItem.ts

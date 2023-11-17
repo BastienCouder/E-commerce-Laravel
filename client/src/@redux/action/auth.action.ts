@@ -51,6 +51,8 @@ const createAuthAction =
 
       if (response.data) {
         dispatch({ type: `${type}_SUCCESS`, payload: response.data });
+        console.log(response.data);
+
         window.location.reload();
       } else {
         console.error(

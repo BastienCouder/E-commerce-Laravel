@@ -53,6 +53,7 @@ export const readProduct = (productId: string): any => {
 
       const response = await axiosClient.get<Product>(`/products/${productId}`);
       dispatch(readProductSuccess(response.data));
+      console.log(response.data);
     } catch (error: any) {
       dispatch(readProductError(error.message));
       console.error("Error fetching products:", error);
@@ -236,6 +237,66 @@ export const deleteProduct = (productId: number): any => {
     } catch (error: any) {
       dispatch(deleteProductError(error.message));
       console.error("Error deleting product:", error);
+    }
+  };
+};
+
+// Action type constants
+export const UPDATE_QUANTITY_REQUEST = "UPDATE_QUANTITY_REQUEST";
+export const UPDATE_QUANTITY_SUCCESS = "UPDATE_QUANTITY_SUCCESS";
+export const UPDATE_QUANTITY_ERROR = "UPDATE_QUANTITY_ERROR";
+
+// Action interface
+interface UpdateQuantityRequestAction {
+  type: typeof UPDATE_QUANTITY_REQUEST;
+}
+
+interface UpdateQuantitySuccessAction {
+  type: typeof UPDATE_QUANTITY_SUCCESS;
+  payload: Product;
+}
+
+interface UpdateQuantityErrorAction {
+  type: typeof UPDATE_QUANTITY_ERROR;
+  error: string;
+}
+
+// Action creator functions
+export const updateQuantityRequest = (): UpdateQuantityRequestAction => ({
+  type: UPDATE_QUANTITY_REQUEST,
+});
+
+export const updateQuantitySuccess = (
+  payload: Product
+): UpdateQuantitySuccessAction => ({
+  type: UPDATE_QUANTITY_SUCCESS,
+  payload,
+});
+
+export const updateQuantityError = (
+  error: string
+): UpdateQuantityErrorAction => ({
+  type: UPDATE_QUANTITY_ERROR,
+  error,
+});
+
+export const updateQuantity = (productId: number, newQuantity: number): any => {
+  return async (dispatch: Dispatch) => {
+    try {
+      dispatch(updateQuantityRequest());
+      console.log("quantyty" + newQuantity);
+
+      const response = await axiosClient.patch<Product>(
+        `/products/update-quantity/${productId}`,
+        { newQuantity: newQuantity }
+      );
+      console.log(response.data);
+
+      dispatch(updateQuantitySuccess(response.data));
+      dispatch(readAllProducts());
+    } catch (error: any) {
+      dispatch(updateQuantityError(error.message));
+      console.error("Error updating quantity:", error);
     }
   };
 };

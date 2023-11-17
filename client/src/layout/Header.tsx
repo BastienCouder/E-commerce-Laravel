@@ -19,18 +19,14 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import { Separator } from "@/components/ui/separator";
-import useCheckAuth from "@/hook/useAuthentification";
+import { useAuth } from "@/context/authContext";
 import { cn } from "@/lib/utils";
-import Loading from "@/loading";
 import { LogOut, User, UserCircle2 } from "lucide-react";
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 
 export default function Header() {
-  const { user, loading } = useCheckAuth();
-  if (loading) {
-    return <Loading />;
-  }
+  const { state } = useAuth();
 
   const components: { title: string; slug: string; description: string }[] = [
     {
@@ -155,7 +151,7 @@ export default function Header() {
                     <span>Profil</span>
                   </Link>
                 </DropdownMenuItem>
-                {user && (
+                {state.user && (
                   <DropdownMenuItem>
                     <div className="font-semibold flex cursor-pointer">
                       <LogOut color="#25354c" className="mr-2 h-4 w-4" />

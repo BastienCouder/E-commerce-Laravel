@@ -14,25 +14,36 @@ class OrderController extends Controller
 {
     public function handleRequest(Request $request)
     {
-        if (Auth::check()) {
-            switch ($request->method()) {
-                case 'GET':
-                    return $this->read($request);
-                case 'POST':
-                    return $this->create($request);
-                case 'PUT':
-                    return $this->update($request);
-                case 'PATCH':
-                case 'DELETE':
-                    return $this->delete($request);
-                default:
-                    return response(['message' => 'Invalid Request'], Response::HTTP_BAD_REQUEST);
-            }
-        } else {
+        if (!Auth::check()) {
             return response(['message' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
         }
-    }
 
+        switch ($request->method()) {
+            case 'GET':
+                return $this->read($request);
+            case 'POST':
+                return $this->create($request);
+            case 'PUT':
+                return $this->update($request);
+            case 'PATCH':
+            case 'DELETE':
+                return $this->delete($request);
+            default:
+                return response(['message' => 'Invalid Request'], Response::HTTP_BAD_REQUEST);
+        }
+    }
+    public function index()
+    {
+        try {
+            $orderItems = OrderItem::with('order', 'cart.cartItems.product', 'deliveryItem')->get();
+
+            return response()->json($orderItems);
+        }catch (\Exception $e) {
+            \Log::error('An error occurred: ' . $e->getMessage());
+            return response()->json(['message' => 'An error occurred.'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+        
     public function read(Request $request)
     {
         try {

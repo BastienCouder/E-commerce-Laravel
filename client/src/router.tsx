@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouteProps } from "react-router-dom";
+import { createBrowserRouter, Navigate, RouteProps } from "react-router-dom";
 import DashboardLayout from "./Admin/layout/DashboardLayout";
 import ProductDetail from "./views/ProductDetail";
 import Products from "./views/Products";
@@ -13,6 +13,7 @@ import Delivery from "./views/Delivery";
 import Summary from "./views/Summary";
 import Orders from "./Admin/Orders";
 import Inventory from "./Admin/Inventory";
+import Root from "./root";
 
 interface Route {
   path: string;
@@ -25,6 +26,10 @@ const router: Route[] = [
     path: "/",
     element: <MainLayout />,
     children: [
+      {
+        path: "/",
+        element: <Root />,
+      },
       {
         path: "products/:categorySlug",
         element: <Products key="ProductCategories" />,

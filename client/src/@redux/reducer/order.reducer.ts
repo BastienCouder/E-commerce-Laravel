@@ -2,20 +2,18 @@ import {
   READ_ORDER_REQUEST,
   READ_ORDER_SUCCESS,
   READ_ORDER_ERROR,
-  CREATE_ORDER_ITEM_REQUEST,
-  CREATE_ORDER_ITEM_SUCCESS,
   CREATE_ORDER_ITEM_ERROR,
+  CREATE_ORDER_ITEM_SUCCESS,
+  CREATE_ORDER_ITEM_REQUEST,
 } from "../action/order.action";
 import { Order } from "@/types/Order";
 
-// Type de l'état initial
 export interface OrderState {
   order: Order | null;
   loading: boolean;
   error: string | null;
 }
 
-// Type d'action
 interface ReadOrderRequestAction {
   type: typeof READ_ORDER_REQUEST;
 }
@@ -52,7 +50,6 @@ export type OrderAction =
   | CreateOrderSuccessAction
   | CreateOrderErrorAction;
 
-// État initial
 const initialState: OrderState = {
   order: null,
   loading: false,

@@ -19,20 +19,11 @@ import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { useAppDispatch, useAppSelector } from "@/hook";
 import { formatLongueDescription } from "@/lib/format";
-import { Category, Product } from "@/types/Product";
+import { Category } from "@/types/Product";
 
 import React, { useEffect, useState } from "react";
 import { deleteProduct, updateProduct } from "@/@redux/action/product.action";
 import axiosClient from "@/lib/axios-client";
-
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { SelectGroup } from "@radix-ui/react-select";
 
 export default function Products() {
   const dispatch = useAppDispatch();
@@ -52,7 +43,7 @@ export default function Products() {
   }>({});
   const [editMode, setEditMode] = useState<number | null>(null);
   const [editedFields, setEditedFields] = useState<{
-    [key: number]: Partial<Product>;
+    [key: number]: Partial<any>;
   }>({});
   const toggleDescription = (productId: number) => {
     setShowFullDescriptions((prev) => ({
@@ -60,7 +51,10 @@ export default function Products() {
       [productId]: !prev[productId],
     }));
   };
-
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+  const [selectedValueOption, setSelectedValueOption] = useState<
+    boolean | null
+  >(null);
   const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
@@ -75,11 +69,6 @@ export default function Products() {
 
     fetchData();
   }, []);
-  const [selectedCategory, setSelectedCategory] = useState("");
-
-  const handleCategorySelect = (categoryId: string) => {
-    setSelectedCategory(categoryId);
-  };
 
   const handleDeleteCanceled = () => {
     setSelectedProducts([]);
@@ -96,7 +85,7 @@ export default function Products() {
 
   const handleEditSelected = () => {
     if (selectedProducts.length > 0) {
-      setSelectedProducts([]);
+      setSelectedProducts([selectedProducts[0]]);
       setEditMode(selectedProducts[0]);
       setEditedFields({});
     }
@@ -117,7 +106,6 @@ export default function Products() {
       }
     }
   };
-
   const handleCheckboxChange = (productId: number) => {
     if (selectedProducts.includes(productId)) {
       setSelectedProducts((prev) => prev.filter((id) => id !== productId));
@@ -131,18 +119,45 @@ export default function Products() {
     productId: number,
     field: string
   ) => {
+    let value: any = e.target.value;
+
     setEditedFields((prev) => ({
       ...prev,
       [productId]: {
         ...prev[productId],
-        [field]: e.target.value,
+        [field]: value,
       },
     }));
   };
 
+  const handleCategorySelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const categoryId = parseInt(e.target.value, 10);
+    setEditedFields((prev) => ({
+      ...prev,
+      [selectedProducts[0]]: {
+        ...prev[selectedProducts[0]],
+        category_id: categoryId,
+      },
+    }));
+
+    setSelectedCategory(categoryId);
+  };
+
+  const handleValueSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const parsedValue = e.target.value === "true";
+    setEditedFields((prev) => ({
+      ...prev,
+      [selectedProducts[0]]: {
+        ...prev[selectedProducts[0]],
+        value: parsedValue,
+      },
+    }));
+    setSelectedValueOption(parsedValue);
+  };
+
   return (
     <>
-      <div className="w-full space-y-4">
+      <div className="w-[70rem] overflow-x space-y-4">
         <div className="space-x-4">
           <Button variant="secondary" onClick={() => handleEditSelected()}>
             Modifier
@@ -187,7 +202,7 @@ export default function Products() {
                 <th className="w-1/6">Categorie</th>
                 <th className="w-2/6">Courte description</th>
                 <th className="w-2/6">Longue description</th>
-                <th className="w-1/6">stock</th>
+                <th className="w-1/6">Mise en avant</th>
                 <th className="w-1/6">Prix</th>
               </tr>
             </thead>
@@ -226,30 +241,19 @@ export default function Products() {
                       </td>
                       <td className="w-1/6 flex justify-center items-center">
                         {editMode === product.id ? (
-                          <Select>
-                            <SelectTrigger className="w-[160px]">
-                              <SelectValue
-                                placeholder={product.category.name}
-                              />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectGroup>
-                                {categories.map((category) => (
-                                  <SelectItem
-                                    key={category.id}
-                                    value={String(category.id)}
-                                    onSelect={() =>
-                                      handleCategorySelect(String(category.id))
-                                    }
-                                  >
-                                    {category.name}
-                                  </SelectItem>
-                                ))}
-                              </SelectGroup>
-                            </SelectContent>
-                          </Select>
+                          <select
+                            value={selectedCategory ?? ""}
+                            onChange={handleCategorySelect}
+                            className="relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 px-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                          >
+                            {categories.map((category) => (
+                              <option key={category.id} value={category.id}>
+                                {category.name}
+                              </option>
+                            ))}
+                          </select>
                         ) : (
-                          product.category.name
+                          product.category?.name
                         )}
                       </td>
                       <td className="w-2/6 flex justify-center items-center px-2">
@@ -310,19 +314,23 @@ export default function Products() {
                       </td>
                       <td className="w-1/6 flex justify-center items-center">
                         {editMode === product.id ? (
-                          <Input
-                            className="w-24"
+                          <select
                             value={
-                              editedFields[product.id]?.stock ?? product.stock
+                              selectedValueOption === true ? "true" : "false"
                             }
-                            onChange={(e) =>
-                              handleInputChange(e, product.id, "stock")
-                            }
-                          />
+                            onChange={handleValueSelect}
+                            className="relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 px-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                          >
+                            <option value="true">Oui</option>
+                            <option value="false">Non</option>
+                          </select>
+                        ) : product.value ? (
+                          "Oui"
                         ) : (
-                          product.stock
+                          "Non"
                         )}
                       </td>
+
                       <td className="w-1/6 flex justify-center items-center">
                         {editMode === product.id ? (
                           <Input

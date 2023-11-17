@@ -12,6 +12,9 @@ import {
   DELETE_PRODUCT_REQUEST,
   DELETE_PRODUCT_SUCCESS,
   DELETE_PRODUCT_ERROR,
+  UPDATE_QUANTITY_REQUEST,
+  UPDATE_QUANTITY_SUCCESS,
+  UPDATE_QUANTITY_ERROR,
 } from "../action/product.action";
 
 // Type de l'état initial
@@ -77,6 +80,20 @@ interface DeleteProductErrorAction {
   payload: string;
 }
 
+interface UpdateQuantityRequestAction {
+  type: typeof UPDATE_QUANTITY_REQUEST;
+}
+
+interface UpdateQuantitySuccessAction {
+  type: typeof UPDATE_QUANTITY_SUCCESS;
+  payload: Product;
+}
+
+interface UpdateQuantityErrorAction {
+  type: typeof UPDATE_QUANTITY_ERROR;
+  payload: string;
+}
+
 export type ProductAction =
   | ReadProductRequestAction
   | ReadProductSuccessAction
@@ -89,7 +106,10 @@ export type ProductAction =
   | UpdateProductErrorAction
   | DeleteProductRequestAction
   | DeleteProductSuccessAction
-  | DeleteProductErrorAction;
+  | DeleteProductErrorAction
+  | UpdateQuantityRequestAction
+  | UpdateQuantitySuccessAction
+  | UpdateQuantityErrorAction;
 
 // État initial
 const initialState: ProductState = {
@@ -154,6 +174,28 @@ export default function productReducer(
     case CREATE_PRODUCT_ERROR:
     case UPDATE_PRODUCT_ERROR:
     case DELETE_PRODUCT_ERROR:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
+
+    case UPDATE_QUANTITY_REQUEST:
+      return {
+        ...state,
+        loading: true,
+        error: null,
+      };
+
+    case UPDATE_QUANTITY_SUCCESS:
+      return {
+        ...state,
+        product: action.payload,
+        loading: false,
+        error: null,
+      };
+
+    case UPDATE_QUANTITY_ERROR:
       return {
         ...state,
         loading: false,

@@ -24,8 +24,8 @@ use Illuminate\Support\Facades\Route;
 Route::group(['prefix' => 'products'], function () {
     // Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('/', [ProductController::class, 'store']);
-        Route::put('/update-quantity/{cartItemId}',  [CartController::class, 'update']);
         Route::put('/{productId}', [ProductController::class, 'update']);
+        Route::patch('/update-quantity/{productId}',  [ProductController::class, 'updateStock']);
         Route::delete('/{productId}', [ProductController::class, 'destroy']);
     // });
 
@@ -70,6 +70,8 @@ Route::group(['prefix' => 'order'], function () {
         Route::post('/', [OrderController::class, 'create']);
         Route::delete('/{OrderItemId}', [OrderController::class, 'softDelete']);
     });
+
+    Route::get('/allOrderItems', [OrderController::class, 'index']);
 });
 
 

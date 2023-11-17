@@ -21,8 +21,9 @@ class ProductController extends Controller
             case 'POST':
                 return $this->store($request);
             case 'PUT':
-            case 'PATCH':
                 return $this->update($request, $request->route('product'));
+            case 'PATCH':
+                return $this->updateStock($request->route('product'), $request);
             case 'DELETE':
                 return $this->destroy($request->route('product'));
             default:
@@ -55,22 +56,27 @@ class ProductController extends Controller
         return response()->json(['product' => $product, 'message' => 'Produit créé avec succès.'], Response::HTTP_CREATED);
     }
     
-    public function show(Product $product)
+    public function show(Product $productId)
     {
-        return response()->json($product, Response::HTTP_OK);
+        error_log('Produit supprimé avec succès. ID : ' . $productId);
+
+        return response()->json($productId, Response::HTTP_OK);
     }
     
     public function update(Request $request, Product $productId)
-    {
-        try {
-            $productId->update($request->all());
+{
+    try {
+        \Log::error($request->all());
 
-            return response()->json(['product' => $productId, 'message' => 'Produit mis à jour avec succès.'], Response::HTTP_OK);
-        } catch (\Exception $e) {
-        
-            return response()->json(['error' => $e->getMessage()], Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
+        $requestData = $request->all();
+        $productId->update($requestData);
+     
+
+        return response()->json(['product' => $productId, 'message' => 'Produit mis à jour avec succès.'], Response::HTTP_OK);
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()], Response::HTTP_UNPROCESSABLE_ENTITY);
     }
+}
     
     public function destroy(Product $productId)
     {
@@ -85,19 +91,13 @@ class ProductController extends Controller
             return response()->json(['message' => 'Erreur lors de la suppression du produit.'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-    // public function checkCategoryProducts()
-    // {
-    //     $categoryId = 1; // Remplacez 1 par l'ID de la catégorie que vous souhaitez vérifier
-    //     $category = Category::find($categoryId);
-
-    //     // Vérifier si la catégorie existe
-    //     if ($category) {
-    //         // Afficher les produits liés à la catégorie
-    //         foreach ($category->products as $product) {
-    //             echo $product->title . '<br>';
-    //         }
-    //     } else {
-    //         echo "Catégorie non trouvée.";
-    //     }
-    // }
+        public function updateStock(Request $request, $productId)
+        {
+            $newQuantity = $request->input('newQuantity');
+            $product = Product::find($productId);
+            $product->stock = $newQuantity;
+            $product->save();
+            return response()->json(['newQuantity' => $newQuantity]);
+        
+    }
 }

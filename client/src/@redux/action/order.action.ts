@@ -1,7 +1,18 @@
 import axiosClient from "@/lib/axios-client";
 import { authToken } from "@/lib/token";
-import { Order } from "@/types/Order";
+import { Order, OrderItem } from "@/types/Order";
 import { Dispatch } from "redux";
+
+export type OrderAction =
+  | ReadOrderRequestAction
+  | ReadOrderSuccessAction
+  | ReadOrderErrorAction
+  | CreateOrderItemRequestAction
+  | CreateOrderItemSuccessAction
+  | CreateOrderItemErrorAction
+  | ReadAllOrderItemsRequestAction
+  | ReadAllOrderItemsSuccessAction
+  | ReadAllOrderItemsErrorAction;
 
 // READ
 // Action type constants
@@ -38,11 +49,6 @@ export const readOrderError = (payload: string): ReadOrderErrorAction => ({
   type: READ_ORDER_ERROR,
   payload,
 });
-
-export type OrderAction =
-  | ReadOrderRequestAction
-  | ReadOrderSuccessAction
-  | ReadOrderErrorAction;
 
 // Async action creator function
 export const readOrder = (): any => {
@@ -88,11 +94,6 @@ interface CreateOrderItemErrorAction {
   payload: string;
 }
 
-export type CreateOrderItemAction =
-  | CreateOrderItemRequestAction
-  | CreateOrderItemSuccessAction
-  | CreateOrderItemErrorAction;
-
 // Action creator functions
 export const createOrderItemRequest = (): CreateOrderItemRequestAction => ({
   type: CREATE_ORDER_ITEM_REQUEST,
@@ -137,15 +138,67 @@ export const createOrderItem = (
           }
         );
       }
-      console.log(cartId);
-      console.log(deliveryItemId);
-      console.log(response);
 
       dispatch(createOrderItemSuccess(response!.data));
       dispatch(readOrder());
     } catch (error: any) {
       dispatch(createOrderItemError(error.message));
       console.error("Error creating order item:", error);
+    }
+  };
+};
+
+export const READ_ALL_ORDER_ITEMS_REQUEST = "READ_ALL_ORDER_ITEMS_REQUEST";
+export const READ_ALL_ORDER_ITEMS_SUCCESS = "READ_ALL_ORDER_ITEMS_SUCCESS";
+export const READ_ALL_ORDER_ITEMS_ERROR = "READ_ALL_ORDER_ITEMS_ERROR";
+
+// Action interface
+interface ReadAllOrderItemsRequestAction {
+  type: typeof READ_ALL_ORDER_ITEMS_REQUEST;
+}
+
+interface ReadAllOrderItemsSuccessAction {
+  type: typeof READ_ALL_ORDER_ITEMS_SUCCESS;
+  payload: OrderItem[]; // Assurez-vous d'avoir le type approprié ici
+}
+
+interface ReadAllOrderItemsErrorAction {
+  type: typeof READ_ALL_ORDER_ITEMS_ERROR;
+  payload: string;
+}
+
+// Action creator functions
+export const readAllOrderItemsRequest = (): ReadAllOrderItemsRequestAction => ({
+  type: READ_ALL_ORDER_ITEMS_REQUEST,
+});
+
+export const readAllOrderItemsSuccess = (
+  payload: OrderItem[]
+): ReadAllOrderItemsSuccessAction => ({
+  type: READ_ALL_ORDER_ITEMS_SUCCESS,
+  payload,
+});
+
+export const readAllOrderItemsError = (
+  payload: string
+): ReadAllOrderItemsErrorAction => ({
+  type: READ_ALL_ORDER_ITEMS_ERROR,
+  payload,
+});
+
+// Async action creator function
+export const readAllOrderItems = (): any => {
+  return async (dispatch: Dispatch) => {
+    try {
+      dispatch(readAllOrderItemsRequest());
+
+      const response = await axiosClient.get("/order/allOrderItems");
+      console.log(response);
+
+      dispatch(readAllOrderItemsSuccess(response.data));
+    } catch (error: any) {
+      dispatch(readAllOrderItemsError(error.message));
+      console.error("Error fetching all order items:", error);
     }
   };
 };
