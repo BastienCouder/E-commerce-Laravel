@@ -99,11 +99,15 @@ export default function Auth() {
   };
 
   const onLogin = useCallback(async () => {
+    const payload = {
+      email: form.getValues("email")?.toString(),
+      password: form.getValues("password")?.toString(),
+    };
     try {
-      const payload = {
-        email: form.getValues("email")?.toString(),
-        password: form.getValues("password")?.toString(),
-      };
+      if (!checkboxChecked) {
+        setIsErrorCheckbox("Veuillez accepter les termes et conditions");
+        return;
+      }
 
       await dispatch(login(payload));
       const cartId = Cookies.get("cart_id");
@@ -112,6 +116,8 @@ export default function Auth() {
       if (cartId) {
         mergeCartAfterLogin(cartId, authToken);
       }
+      setIsErrorCheckbox("");
+      setCheckboxChecked(!checkboxChecked);
     } catch (error) {
       console.error("Une erreur s'est produite lors de la connexion :", error);
       throw error;
@@ -245,12 +251,6 @@ export default function Auth() {
                     </FormControl>
 
                     <div className="flex flex-col">
-                      <Link
-                        to="/auth/forgotPassword"
-                        className="cursor-pointer"
-                      >
-                        <small>Mot de passe oublié ?</small>
-                      </Link>
                       <FormMessage />
                     </div>
                   </FormItem>

@@ -1,12 +1,14 @@
 import { Sidebar } from "@/Admin/components/Sidebar";
 import { useAuth } from "@/context/authContext";
-import { Navigate, Outlet } from "react-router-dom";
+import { authToken } from "@/lib/token";
+import { Outlet, useNavigate } from "react-router-dom";
 
 export default function DashboardLayout() {
   const { state } = useAuth();
+  const navigate = useNavigate();
 
-  if (state.user?.account && state.user.account !== "admin") {
-    return <Navigate to="/" />;
+  if ((state.user?.account && state.user.account !== "admin") || !authToken) {
+    navigate("/");
   }
 
   return (

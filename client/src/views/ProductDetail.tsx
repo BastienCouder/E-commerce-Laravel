@@ -14,8 +14,6 @@ import {
 import { useAppDispatch, useAppSelector } from "@/hook";
 import { readProduct } from "@/@redux/action/product.action";
 import ErrorPage from "@/error-page";
-
-import { Size } from "@/types/Product";
 import { RootState } from "@/@redux/store";
 
 export default function ProductDetail() {
@@ -25,8 +23,6 @@ export default function ProductDetail() {
   let { product, loading, error } = useAppSelector(
     (state: RootState) => state.product
   );
-
-  const [selectedSize, setSelectedSize] = useState<string | null>(null);
 
   if (error) {
     return <ErrorPage />;
@@ -43,10 +39,6 @@ export default function ProductDetail() {
       setIsLoading(false);
     }
   }, [product]);
-
-  const handleSizeClick = (size: Size) => {
-    setSelectedSize(size.name);
-  };
 
   return (
     <>
@@ -105,32 +97,6 @@ export default function ProductDetail() {
               <Skeleton className="w-full h-8" />
             ) : (
               <p>{product?.shortDescription}</p>
-            )}
-            {isLoading ? (
-              <Skeleton className="w-full h-12" />
-            ) : (
-              <>
-                {product?.sizes && product.sizes.length > 0 && (
-                  <div className="space-y-1">
-                    <p className="font-bold text-sm">Tailles :</p>
-                    <ul className="flex gap-2">
-                      {product?.sizes.map((size: Size, index: number) => (
-                        <li
-                          key={index}
-                          className={`cursor-pointer flex justify-center items-center w-8 p-1 border ${
-                            selectedSize === size.name
-                              ? "bg-primary text-white"
-                              : ""
-                          }`}
-                          onClick={() => handleSizeClick(size)}
-                        >
-                          {size.name}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </>
             )}
           </div>
           <div className="pt-2">

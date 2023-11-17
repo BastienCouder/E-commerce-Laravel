@@ -1,6 +1,5 @@
 import { createOrderItem } from "@/@redux/action/order.action";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/context/authContext";
 import { useAppDispatch } from "@/hook";
 import { useTransition } from "react";
 import { useNavigate } from "react-router-dom";
@@ -28,7 +27,7 @@ export default function AddToOrder({
         onClick={() => {
           startTransition(() => {
             handleAddToOrderClick();
-            // navigate("/thankYou");
+            navigate("/thankYou");
           });
         }}
       >

@@ -164,7 +164,7 @@ export default function Cart() {
             </div>
           </>
         ) : (
-          <div className="space-y-2">
+          <div className="h-[16rem] space-y-2">
             <p>Aucun produit dans le panier</p>
             <Button>
               <Link to="/"> Continuez mes achats</Link>

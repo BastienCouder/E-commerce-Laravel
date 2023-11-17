@@ -29,10 +29,15 @@ export const removeAccents = (str: string) => {
 };
 
 export function formatDescription(description: string): string {
+  if (!description) {
+    return "";
+  }
+
   const words = description.split(" ");
   if (words.length <= 20) {
     return description;
   }
+
   const truncatedDescription = words.slice(0, 20).join(" ");
   return truncatedDescription + "...";
 }

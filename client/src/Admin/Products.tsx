@@ -316,7 +316,9 @@ export default function Products() {
                         {editMode === product.id ? (
                           <select
                             value={
-                              selectedValueOption === true ? "true" : "false"
+                              selectedValueOption
+                                ? selectedValueOption.toString()
+                                : "false"
                             }
                             onChange={handleValueSelect}
                             className="relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 px-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"

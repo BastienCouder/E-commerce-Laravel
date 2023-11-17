@@ -1,4 +1,3 @@
-"use client";
 import { createCartItem } from "@/@redux/action/cart.action";
 import { Button } from "@/components/ui/button";
 import { useAppDispatch } from "@/hook";
@@ -14,11 +13,6 @@ export default function AddToCartButton({ productId }: AddToCartButtonProps) {
   const dispatch = useAppDispatch();
 
   const handleAddToCartClick = async () => {
-    // if (selectedSize === null) {
-    //   // Aucune taille n'est sélectionnée, affiche une erreur
-    //   alert("Veuillez sélectionner une taille avant d'ajouter au panier");
-    //   return;
-    // }
     dispatch(createCartItem(productId));
   };
 

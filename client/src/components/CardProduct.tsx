@@ -3,6 +3,7 @@ import { Product } from "@/types/Product";
 import { Link } from "react-router-dom";
 import { Skeleton } from "./ui/skeleton";
 import { Button } from "./ui/button";
+import AddToCartButton from "./AddToCartButton";
 
 interface CardProductProps {
   categorySlug: string | undefined;
@@ -16,7 +17,7 @@ export default function CardProduct({
   isLoading,
 }: CardProductProps) {
   return (
-    <div className="w-[300px] max-h-[600px] p-2">
+    <div className="min-w-[300px] w-[300px] max-h-[600px] p-2">
       {isLoading ? (
         <Skeleton className="h-[350px] w-full" />
       ) : (
@@ -38,10 +39,11 @@ export default function CardProduct({
               <h2>{product.name}</h2>
               <p>{formatPrice(product.price, "EUR")}</p>
               <p className="h-16">
-                Description courte :{product.shortDescription}
+                Description courte :
+                {formatDescription(product.shortDescription)}
               </p>
             </div>
-            <Button className="w-full">Ajouter au panier</Button>
+            <AddToCartButton productId={String(product.id)} />
           </>
         )}
       </div>

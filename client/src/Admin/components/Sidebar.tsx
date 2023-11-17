@@ -2,11 +2,12 @@ import Logout from "@/components/Logout";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Barcode, Book, LogOut, PackageSearch } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export function Sidebar({ className }: SidebarProps) {
+  const location = useLocation();
   return (
     <div className={cn("pb-12 h-full border-r-2", className)}>
       <div className="space-y-2 px-3 py-4">
@@ -17,8 +18,12 @@ export function Sidebar({ className }: SidebarProps) {
           <li>
             <Link to="/dashboard/orders">
               <Button
-                variant="secondary"
-                className="w-full justify-start gap-x-2"
+                variant="ghost"
+                className={`w-full justify-start gap-x-2 ${
+                  location.pathname === "/dashboard/orders"
+                    ? "bg-gray-200/50"
+                    : ""
+                }`}
               >
                 <PackageSearch size={20} color="#25354c" />
                 Commandes
@@ -27,7 +32,14 @@ export function Sidebar({ className }: SidebarProps) {
           </li>
           <li>
             <Link to="/dashboard/products">
-              <Button variant="ghost" className="w-full justify-start gap-x-2">
+              <Button
+                variant="ghost"
+                className={`w-full justify-start gap-x-2 ${
+                  location.pathname === "/dashboard/products"
+                    ? "bg-gray-200/50"
+                    : ""
+                }`}
+              >
                 <Barcode size={20} color="#25354c" />
                 Produits
               </Button>
@@ -35,7 +47,14 @@ export function Sidebar({ className }: SidebarProps) {
           </li>
           <li>
             <Link to="/dashboard/inventory">
-              <Button variant="ghost" className="w-full justify-start gap-x-2">
+              <Button
+                variant="ghost"
+                className={`w-full justify-start gap-x-2 ${
+                  location.pathname === "/dashboard/inventory"
+                    ? "bg-gray-200/50"
+                    : ""
+                }`}
+              >
                 <Book size={20} color="#25354c" />
                 Inventaire
               </Button>

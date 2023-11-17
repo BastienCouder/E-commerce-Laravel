@@ -133,7 +133,7 @@ export default function Delivery() {
                   </li>
                 ))
               ) : (
-                <div className="h-[11rem]"></div>
+                <div className="h-[12rem]"></div>
               )}
             </ul>
           </div>
