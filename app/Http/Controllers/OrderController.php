@@ -26,6 +26,7 @@ class OrderController extends Controller
             case 'PUT':
                 return $this->update($request);
             case 'PATCH':
+                return $this->updateStatus($request);
             case 'DELETE':
                 return $this->delete($request);
             default:
@@ -144,7 +145,19 @@ class OrderController extends Controller
             return response()->json(['message' => 'Une erreur s\'est produite'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-    
+    public function updateStatus(Request $request, $orderId)
+    {
+        $newStatus = $request->input('newStatus');
+        $order = Order::find($orderId);
+
+        if (!$order) {
+            return response()->json(['error' => 'Order not found'], 404);
+        }
+        $order->status = $newStatus;
+        $order->save();
+
+        return response()->json(['newStatus' => $newStatus]);
+    }
 
     private function generateOrderNumber()
 {

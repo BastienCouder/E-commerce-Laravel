@@ -2,6 +2,8 @@ import axiosClient from "@/lib/axios-client";
 import { authToken } from "@/lib/token";
 import { Order, OrderItem } from "@/types/Order";
 import { Dispatch } from "redux";
+import { readCart } from "./cart.action";
+import { readAllProducts } from "./products.action";
 
 export type OrderAction =
   | ReadOrderRequestAction
@@ -9,10 +11,7 @@ export type OrderAction =
   | ReadOrderErrorAction
   | CreateOrderItemRequestAction
   | CreateOrderItemSuccessAction
-  | CreateOrderItemErrorAction
-  | ReadAllOrderItemsRequestAction
-  | ReadAllOrderItemsSuccessAction
-  | ReadAllOrderItemsErrorAction;
+  | CreateOrderItemErrorAction;
 
 // READ
 // Action type constants
@@ -141,64 +140,11 @@ export const createOrderItem = (
 
       dispatch(createOrderItemSuccess(response!.data));
       dispatch(readOrder());
+      dispatch(readCart());
+      dispatch(readAllProducts());
     } catch (error: any) {
       dispatch(createOrderItemError(error.message));
       console.error("Error creating order item:", error);
-    }
-  };
-};
-
-export const READ_ALL_ORDER_ITEMS_REQUEST = "READ_ALL_ORDER_ITEMS_REQUEST";
-export const READ_ALL_ORDER_ITEMS_SUCCESS = "READ_ALL_ORDER_ITEMS_SUCCESS";
-export const READ_ALL_ORDER_ITEMS_ERROR = "READ_ALL_ORDER_ITEMS_ERROR";
-
-// Action interface
-interface ReadAllOrderItemsRequestAction {
-  type: typeof READ_ALL_ORDER_ITEMS_REQUEST;
-}
-
-interface ReadAllOrderItemsSuccessAction {
-  type: typeof READ_ALL_ORDER_ITEMS_SUCCESS;
-  payload: OrderItem[]; // Assurez-vous d'avoir le type approprié ici
-}
-
-interface ReadAllOrderItemsErrorAction {
-  type: typeof READ_ALL_ORDER_ITEMS_ERROR;
-  payload: string;
-}
-
-// Action creator functions
-export const readAllOrderItemsRequest = (): ReadAllOrderItemsRequestAction => ({
-  type: READ_ALL_ORDER_ITEMS_REQUEST,
-});
-
-export const readAllOrderItemsSuccess = (
-  payload: OrderItem[]
-): ReadAllOrderItemsSuccessAction => ({
-  type: READ_ALL_ORDER_ITEMS_SUCCESS,
-  payload,
-});
-
-export const readAllOrderItemsError = (
-  payload: string
-): ReadAllOrderItemsErrorAction => ({
-  type: READ_ALL_ORDER_ITEMS_ERROR,
-  payload,
-});
-
-// Async action creator function
-export const readAllOrderItems = (): any => {
-  return async (dispatch: Dispatch) => {
-    try {
-      dispatch(readAllOrderItemsRequest());
-
-      const response = await axiosClient.get("/order/allOrderItems");
-      console.log(response);
-
-      dispatch(readAllOrderItemsSuccess(response.data));
-    } catch (error: any) {
-      dispatch(readAllOrderItemsError(error.message));
-      console.error("Error fetching all order items:", error);
     }
   };
 };

@@ -19,6 +19,7 @@ export interface OrderItem {
   cart_id?: number;
   cart: Cart;
   order_number: string;
+  status: boolean;
   total_price: number;
   delivery_item: DeliveryItem;
   deliveryItem_id?: number;

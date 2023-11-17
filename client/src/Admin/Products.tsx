@@ -244,7 +244,7 @@ export default function Products() {
                           <select
                             value={selectedCategory ?? ""}
                             onChange={handleCategorySelect}
-                            className="relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 px-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                            className="border-2 relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 px-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                           >
                             {categories.map((category) => (
                               <option key={category.id} value={category.id}>
@@ -321,7 +321,7 @@ export default function Products() {
                                 : "false"
                             }
                             onChange={handleValueSelect}
-                            className="relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 px-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                            className="border-2 relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 px-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                           >
                             <option value="true">Oui</option>
                             <option value="false">Non</option>

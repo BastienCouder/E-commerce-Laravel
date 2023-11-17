@@ -32,8 +32,8 @@ export default function Inventory() {
 
   return (
     <>
-      <div className="w-full flex justify-between overflow-y-auto h-full">
-        <table className="w-full flex flex-col items-center justify-around space-y-2">
+      <div className="w-[70rem] overflow-x  flex justify-between overflow-y-auto h-full">
+        <table className="w-full flex flex-col items-center space-y-2">
           <thead className="w-full border-b-2 pb-2 border-secondary">
             <tr className="w-full flex justify-start">
               <th className="w-1/6">ID</th>
