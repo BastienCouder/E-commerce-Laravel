@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import formatPrice from "@/lib/format";
 import AddToCartButton from "@/components/AddToCartButton";
 import { Skeleton } from "@/components/ui/skeleton";
-
+import { useMemo } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -16,6 +16,7 @@ import { readProduct } from "@/@redux/action/product.action";
 import ErrorPage from "@/error-page";
 import { RootState } from "@/@redux/store";
 import { baseUrl } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 
 export default function ProductDetail() {
   const { productId } = useParams<{ productId: string }>();
@@ -37,6 +38,15 @@ export default function ProductDetail() {
     }
   }, [dispatch, productId, product, loading, error]);
 
+  const isNew = useMemo(() => {
+    if (product) {
+      return (
+        Date.now() - new Date(product.created_at).getTime() <
+        1000 * 60 * 60 * 24 * 7
+      );
+    }
+  }, [product?.created_at]);
+
   return (
     <>
       <section className="w-full flex flex-col md:flex-row p-4">
@@ -49,7 +59,7 @@ export default function ProductDetail() {
           ) : (
             <div className="w-full flex flex-wrap xl:flex-nowrap gap-4">
               <div className="hidden xl:flex min-w-[200px] w-full xl:w-1/2 min-h-[400px]"></div>
-              <div className="flex justify-center items-center min-w-[200px] w-full xl:w-1/2 min-h-[400px]">
+              <div className="relative flex justify-center items-center min-w-[200px] w-full xl:w-1/2 min-h-[400px]">
                 <figure className="h-[400px] p-4 border-2 w-full flex justify-center items-center">
                   <img
                     src={`${baseUrl}/storage/${product?.image}`}
@@ -57,6 +67,11 @@ export default function ProductDetail() {
                     className="object-contain w-full h-[300px]"
                   />
                 </figure>
+                {isNew && (
+                  <Badge className="absolute top-5 left-0 md:left-5">
+                    Nouveau
+                  </Badge>
+                )}
               </div>
             </div>
           )}

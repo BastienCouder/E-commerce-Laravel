@@ -9,6 +9,7 @@ export interface Product {
   shortDescription: string;
   longDescription: string;
   stock: number;
+  created_at: Date;
   sizes?: Size[];
 }
 
