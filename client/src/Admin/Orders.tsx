@@ -8,6 +8,7 @@ import { useAppDispatch, useAppSelector } from "@/hook";
 import { Separator } from "@radix-ui/react-separator";
 import formatPrice, { formatDate, formatDescription } from "@/lib/format";
 import { Button } from "@/components/ui/button";
+import { baseUrl } from "@/lib/utils";
 
 export default function Orders() {
   const dispatch = useAppDispatch();
@@ -170,7 +171,7 @@ export default function Orders() {
                                       >
                                         <figure className="flex w-full">
                                           <img
-                                            src={cartItem.product.image}
+                                            src={`${baseUrl}/storage/${cartItem.product.image}`}
                                             alt={cartItem.product.name}
                                             width={400}
                                             height={400}

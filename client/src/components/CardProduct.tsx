@@ -2,7 +2,6 @@ import formatPrice, { formatDescription } from "@/lib/format";
 import { Product } from "@/types/Product";
 import { Link } from "react-router-dom";
 import { Skeleton } from "./ui/skeleton";
-import { Button } from "./ui/button";
 import AddToCartButton from "./AddToCartButton";
 
 interface CardProductProps {
@@ -22,11 +21,11 @@ export default function CardProduct({
         <Skeleton className="h-[350px] w-full" />
       ) : (
         <Link to={`/products/${categorySlug}/${product.id}`}>
-          <figure className="h-[350px] bg-primary w-full">
+          <figure className="h-[350px] p-4 border-2 w-full flex justify-center items-center">
             <img
-              src={product.image}
+              src={`${product.image}`}
               alt={product.name}
-              className="object-cover"
+              className="object-contain w-full h-[300px]"
             />
           </figure>
         </Link>

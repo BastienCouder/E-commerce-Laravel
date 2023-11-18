@@ -15,6 +15,7 @@ import ErrorPage from "@/error-page";
 import { Skeleton } from "@/components/ui/skeleton";
 import Loading from "@/loading";
 import { useAuth } from "@/context/authContext";
+import { baseUrl } from "@/lib/utils";
 
 export default function Cart() {
   const [isLoading, setIsLoading] = useState(false);
@@ -69,8 +70,9 @@ export default function Cart() {
                     <div className="flex gap-x-8">
                       <figure className="flex justify-center items-center h-[180px] w-[180px] object-contain">
                         <img
-                          src={cartItem.product?.image}
+                          src={`${baseUrl}/storage/${cartItem.product.image}`}
                           alt={cartItem.product?.name}
+                          className="rounded-lg w-[140px] h-[140px] object-contain"
                         />
                       </figure>
                       <div className="flex flex-col gap-y-2">

@@ -24,13 +24,13 @@ export default function Products() {
   }
 
   useEffect(() => {
-    if (!products.length && !loading && !error) {
+    if (products && !loading && !error) {
       dispatch(readAllProducts());
     }
   }, [dispatch, products]);
 
   useEffect(() => {
-    if (products.length && !loading) {
+    if (products && !loading) {
       setIsLoading(false);
     }
   }, [products]);

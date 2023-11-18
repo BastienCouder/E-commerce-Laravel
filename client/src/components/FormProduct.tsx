@@ -27,7 +27,6 @@ import { createProduct } from "@/@redux/action/product.action";
 import { useAppDispatch } from "@/hook";
 import { useCallback, useEffect, useState } from "react";
 import { Textarea } from "./ui/textarea";
-import { $CombinedState } from "redux";
 import axiosClient from "@/lib/axios-client";
 import { Category } from "@/types/Product";
 
@@ -66,6 +65,7 @@ export default function FormProduct() {
 
     const formData = new FormData();
     formData.append("name", form.getValues("name")?.toString());
+    formData.append("image", form.getValues("image")?.toString());
     formData.append("category_id", form.getValues("category_id")?.toString());
     formData.append(
       "shortDescription",
@@ -77,9 +77,6 @@ export default function FormProduct() {
     );
     formData.append("price", form.getValues("price")?.toString());
     formData.append("stock", form.getValues("stock")?.toString());
-
-    const imageFile = form.getValues("image");
-    formData.append("image", imageFile[0]);
 
     try {
       await dispatch(createProduct(formData));
@@ -137,7 +134,7 @@ export default function FormProduct() {
                   <FormItem className="w-full">
                     <FormLabel>Image*</FormLabel>
                     <FormControl>
-                      <Input type="file" {...field} />
+                      <Input placeholder="Url de l'image" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

@@ -104,6 +104,15 @@ export const DeliverySchema = z.object({
     .email({
       message: "E-mail invalide",
     }),
+  image: z
+    .string({
+      required_error: "L'url de l'image est requise",
+      invalid_type_error: "L'e-mail doit être une chaîne de caractères",
+    })
+    .min(2, {
+      message: "L'url de l'image doit comporter au moins 2 caractères.",
+    })
+    .max(250),
   address_1: z
     .string({
       required_error: "L'adresse est requise",

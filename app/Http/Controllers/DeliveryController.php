@@ -26,10 +26,10 @@ class DeliveryController extends Controller
                 case 'DELETE':
                     return $this->delete($request);
                 default:
-                    return response(['message' => 'Invalid Request'], Response::HTTP_BAD_REQUEST);
+                    return response(['message' => 'Demande non valide'], Response::HTTP_BAD_REQUEST);
             }
         } else {
-            return response(['message' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
+            return response(['message' => 'Utilisateur non authentifié.'], Response::HTTP_UNAUTHORIZED);
         }
     }
 
@@ -61,24 +61,17 @@ class DeliveryController extends Controller
         $user = Auth::user();
         
         if ($user && Auth::check()) {
-            error_log("User ID: " . $user->id);
 
             $delivery = $user->delivery;
-
-            // Si l'utilisateur n'a pas de livraison, en créer une
             if (!$delivery) {
-                error_log("Création d'une nouvelle livraison pour l'utilisateur " . $user->id);
                 $delivery = new Delivery();
                 $delivery->user()->associate($user);
                 $delivery->save();
-            } else {
-                error_log("L'utilisateur a déjà une livraison : " . $delivery->id);
             }
 
             $existingDefaultItem = $delivery->deliveryItems()->where('Default', true)->first();
 
             if ($existingDefaultItem) {
-                error_log("L'article par défaut existant a été trouvé : " . $existingDefaultItem->id);
                 $existingDefaultItem->update(['Default' => false]);
             }
 
@@ -100,15 +93,12 @@ class DeliveryController extends Controller
             $newDefaultItem->delivery()->associate($delivery);
             $newDefaultItem->save();
 
-            error_log("Nouvel article par défaut créé : " . $newDefaultItem->id);
-
             return response()->json(['message' => 'Livraison créée avec succès', 'delivery' => $delivery]);
         } else {
             return response()->json(['message' => 'Livraison non trouvée pour l\'utilisateur'], 404);
         }
     } catch (\Exception $e) {
         error_log($e->getMessage());
-        error_log("Exception Trace: " . $e->getTraceAsString());
         return response()->json(['message' => 'Une erreur s\'est produite'], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 }
@@ -132,14 +122,12 @@ public function updateDefaultDeliveryItem(Request $request, $deliveryItemId)
 
         if ($existingDefaultItem) {
             $existingDefaultItem->update(['Default' => false]);
-            error_log("Article par défaut mis à jour : " . $existingDefaultItem->id);
             return response()->json(['message' => 'Article par défaut mis à jour avec succès', 'delivery' => $delivery]);
         } else {
             return response()->json(['message' => 'Aucun article par défaut trouvé pour la livraison de l\'utilisateur'], 404);
         }
     } catch (\Exception $e) {
         error_log($e->getMessage());
-        error_log("Exception Trace: " . $e->getTraceAsString());
         return response()->json(['message' => 'Une erreur s\'est produite'], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 }
@@ -158,7 +146,7 @@ public function updateDefaultDeliveryItem(Request $request, $deliveryItemId)
 
         return response()->json(['message' => 'Le moyen de livraison a été supprimé avec succès']);
     } catch (\Exception $e) {
-        error_log("Erreur lors de la suppression du DeliveryItem : {$e->getMessage()}");
+        \Log::error("Erreur lors de la suppression du DeliveryItem : {$e->getMessage()}");
 
         return response()->json(['message' => $e->getMessage()], 500);
     }

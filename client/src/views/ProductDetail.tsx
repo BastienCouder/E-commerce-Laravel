@@ -15,6 +15,7 @@ import { useAppDispatch, useAppSelector } from "@/hook";
 import { readProduct } from "@/@redux/action/product.action";
 import ErrorPage from "@/error-page";
 import { RootState } from "@/@redux/store";
+import { baseUrl } from "@/lib/utils";
 
 export default function ProductDetail() {
   const { productId } = useParams<{ productId: string }>();
@@ -29,21 +30,17 @@ export default function ProductDetail() {
   }
 
   useEffect(() => {
-    if (productId && !loading && !error) {
+    if (productId && !loading && !error && !product) {
       dispatch(readProduct(productId));
-    }
-  }, [dispatch, productId]);
-
-  useEffect(() => {
-    if (product && !loading) {
+    } else {
       setIsLoading(false);
     }
-  }, [product]);
+  }, [dispatch, productId, product, loading, error]);
 
   return (
     <>
       <section className="w-full flex flex-col md:flex-row p-4">
-        <div className="md:w-3/5 p-4">
+        <div className="md:w-1/2 p-4">
           {isLoading ? (
             <div className="flex space-x-4">
               <Skeleton className="min-w-[200px] w-full xl:w-1/2 min-h-[400px]" />
@@ -51,12 +48,20 @@ export default function ProductDetail() {
             </div>
           ) : (
             <div className="w-full flex flex-wrap xl:flex-nowrap gap-4">
-              <div className="min-w-[200px] w-full xl:w-1/2 bg-primary min-h-[400px]"></div>
-              <div className="min-w-[200px] w-full xl:w-1/2 bg-primary min-h-[400px]"></div>
+              <div className="hidden xl:flex min-w-[200px] w-full xl:w-1/2 min-h-[400px]"></div>
+              <div className="flex justify-center items-center min-w-[200px] w-full xl:w-1/2 min-h-[400px]">
+                <figure className="h-[400px] p-4 border-2 w-full flex justify-center items-center">
+                  <img
+                    src={`${baseUrl}/storage/${product?.image}`}
+                    alt={product?.name}
+                    className="object-contain w-full h-[300px]"
+                  />
+                </figure>
+              </div>
             </div>
           )}
         </div>
-        <div className="md:w-2/5 p-4 space-y-4">
+        <div className="md:w-1/2 p-4 space-y-4">
           {isLoading ? (
             <Skeleton className="w-1/2 h-8" />
           ) : (

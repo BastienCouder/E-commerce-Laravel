@@ -3,6 +3,7 @@ import { RootState } from "@/@redux/store";
 import { useAuth } from "@/context/authContext";
 import { useAppDispatch, useAppSelector } from "@/hook";
 import formatPrice, { formatDate, formatDescription } from "@/lib/format";
+import { baseUrl } from "@/lib/utils";
 import { CreditCard, Timer, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
@@ -160,7 +161,7 @@ const Profile: React.FC = () => {
                                     >
                                       <figure className="flex w-full">
                                         <img
-                                          src={cartItem.product.image}
+                                          src={`${baseUrl}/storage/${cartItem.product.image}`}
                                           alt={cartItem.product.name}
                                           width={400}
                                           height={400}

@@ -47,7 +47,7 @@ export default function Header() {
     },
     {
       title: "CHAUSSURES",
-      slug: "chaussure",
+      slug: "chaussures",
       description: "Chaussures de ski de fond pour une expérience optimale",
     },
     {

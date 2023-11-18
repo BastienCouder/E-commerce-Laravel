@@ -3,7 +3,7 @@ import { Helmet } from "react-helmet";
 import { Button } from "./components/ui/button";
 import CardProduct from "@/components/CardProduct";
 import { Product } from "./types/Product";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "./hook";
 import { RootState } from "./@redux/store";
 import ErrorPage from "./error-page";
@@ -35,7 +35,7 @@ export default function root() {
       src: "./images/shoes.jpg",
       alt: "Chaussures",
       name: "Chaussures de skis",
-      slug: "chaussure",
+      slug: "chaussures",
     },
     {
       src: "./images/sac-a-dos.jpg",
@@ -45,7 +45,6 @@ export default function root() {
     },
     { src: "./images/velos.jpg", alt: "velo", name: "Vélos", slug: "velos" },
   ];
-  const [isLoading, setIsLoading] = useState(true);
   const dispatch = useAppDispatch();
   const { products, loading, error } = useAppSelector(
     (state: RootState) => state.products
@@ -60,12 +59,6 @@ export default function root() {
       dispatch(readAllProducts());
     }
   }, [dispatch, products]);
-
-  useEffect(() => {
-    if (products.length && !loading) {
-      setIsLoading(false);
-    }
-  }, [products]);
 
   const valueProducts = products.filter(
     (product: Product) => product.value === true || product.value === 1

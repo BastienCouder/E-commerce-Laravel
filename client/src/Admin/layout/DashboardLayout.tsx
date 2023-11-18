@@ -2,6 +2,7 @@ import { Sidebar } from "@/Admin/components/Sidebar";
 import { useAuth } from "@/context/authContext";
 import { authToken } from "@/lib/token";
 import { Outlet, useNavigate } from "react-router-dom";
+import { Toaster } from "sonner";
 
 export default function DashboardLayout() {
   const { state } = useAuth();
@@ -12,17 +13,20 @@ export default function DashboardLayout() {
   }
 
   return (
-    <div id="dashboardLayout">
-      <div className="content">
-        <main className="flex">
-          <header className="w-96">
-            <Sidebar />
-          </header>
-          <div className="w-4/5 p-4">
-            <Outlet />
-          </div>
-        </main>
+    <>
+      <div id="dashboardLayout">
+        <div className="content">
+          <main className="flex">
+            <header className="w-96">
+              <Sidebar />
+            </header>
+            <div className="w-4/5 p-4">
+              <Outlet />
+            </div>
+          </main>
+        </div>
       </div>
-    </div>
+      <Toaster expand={false} position="bottom-left" />
+    </>
   );
 }

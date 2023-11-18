@@ -40,7 +40,7 @@ class OrderController extends Controller
 
             return response()->json($orderItems);
         }catch (\Exception $e) {
-            \Log::error('An error occurred: ' . $e->getMessage());
+            \Log::error('Une erreur s\'est produite: ' . $e->getMessage());
             return response()->json(['message' => 'An error occurred.'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -68,6 +68,7 @@ class OrderController extends Controller
                 return response()->json(['message' => 'Données de livraison non trouvées pour cet utilisateur.'], 404);
             }
         } catch (\Exception $e) {
+            \Log::error('Une erreur s\'est produite : ' . $e->getMessage());
             return response()->json(['message' => 'Une erreur s\'est produite.'], 500);
         }
     }
@@ -78,25 +79,18 @@ class OrderController extends Controller
             $user = Auth::user();
     
             if ($user && Auth::check()) {
-                error_log("User ID: " . $user->id);
     
                 $order = $user->order;
     
-                if (!$order) {
-                    error_log("Création d'une nouvelle commande pour l'utilisateur " . $user->id);
+                if (!$order) {;
     
                     $order = new Order();
                     $order->user()->associate($user);
                     $order->save();
-                } else {
-                    error_log("L'utilisateur a déjà une commande : " . $order->id);
                 }
     
                 $cartId = $request->input('cartId');
                 $deliveryItemId = $request->input('deliveryItemId');
-    
-                error_log("Cart ID: " . $cartId);
-                error_log("Delivery Item ID: " . $deliveryItemId);
     
                 $cart = Cart::find($cartId);
     
@@ -110,10 +104,7 @@ class OrderController extends Controller
                         if ($product->stock >= $cartItem->quantity) {
                             $product->stock -= $cartItem->quantity;
                             $product->save();
-                    
-                            error_log("Quantité en stock mise à jour pour {$product->name}. Nouveau stock : {$product->stock}");
                         } else {
-                            error_log("La quantité en stock de {$product->name} n'est pas suffisante.");
                             return response()->json(['message' => 'La quantité en stock n\'est pas suffisante.'], Response::HTTP_BAD_REQUEST);
                         }
                     }

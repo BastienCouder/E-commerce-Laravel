@@ -1,4 +1,4 @@
-import { createBrowserRouter, Navigate, RouteProps } from "react-router-dom";
+import { createBrowserRouter, RouteProps } from "react-router-dom";
 import DashboardLayout from "./Admin/layout/DashboardLayout";
 import ProductDetail from "./views/ProductDetail";
 import Products from "./views/Products";

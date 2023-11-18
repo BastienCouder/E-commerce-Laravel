@@ -83,7 +83,7 @@ interface CreateDeliveryItemRequestAction {
 
 interface CreateDeliveryItemSuccessAction {
   type: typeof CREATE_DELIVERY_ITEM_SUCCESS;
-  payload: Delivery; // Assurez-vous que le type Delivery est correct
+  payload: Delivery;
 }
 
 interface CreateDeliveryItemErrorAction {

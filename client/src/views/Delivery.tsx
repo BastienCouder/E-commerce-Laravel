@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/authContext";
 import ErrorPage from "@/error-page";
 import { useAppDispatch, useAppSelector } from "@/hook";
-import Loading from "@/loading";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -77,13 +76,13 @@ export default function Delivery() {
       <section className="flex w-full">
         <div className="md:w-1/2 space-y-4">
           <FormDelivery />
-          <div className="w-[20rem]">
+          <div className="w-full">
             <ul className="space-y-4 w-full md:w-[35rem]">
               {delivery?.deliveryItems ? (
                 delivery.deliveryItems.map((deliveryItem) => (
                   <li
                     key={deliveryItem.id}
-                    className="overflow-x-auto flex text-sm border-2 px-8 py-6 border-primary"
+                    className="flex  flex-col md:flex-row space-y-4 md:space-y-0 text-sm border-2 px-8 py-6 border-primary"
                   >
                     <div className="w-60">
                       <div className="flex flex-col font-bold">
@@ -105,7 +104,7 @@ export default function Delivery() {
                       </div>
                       <p>{deliveryItem.phone}</p>
                     </div>
-                    <div className="pl-12 space-y-4">
+                    <div className="md:pl-12 space-y-4">
                       <div className="flex gap-x-4">
                         <div
                           onClick={() => handleDeliveryChange(deliveryItem.id)}

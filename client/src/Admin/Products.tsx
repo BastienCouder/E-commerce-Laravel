@@ -25,6 +25,7 @@ import React, { useEffect, useState } from "react";
 import { deleteProduct, updateProduct } from "@/@redux/action/product.action";
 import axiosClient from "@/lib/axios-client";
 import FormProduct from "@/components/FormProduct";
+import { toast } from "sonner";
 
 export default function Products() {
   const dispatch = useAppDispatch();
@@ -82,6 +83,7 @@ export default function Products() {
     setSelectedProducts([]);
     setEditMode(null);
     setEditedFields({});
+    toast.success("Produit supprimé avec succès");
   };
 
   const handleEditSelected = () => {
@@ -102,6 +104,7 @@ export default function Products() {
         setEditMode(null);
         setSelectedProducts([]);
         setEditedFields({});
+        toast.success("Produit modifié avec succès");
       } else {
         console.error("Erreur: productId ou productData est undefined");
       }

@@ -17,37 +17,6 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
-
-    public function redirectToGoogle()
-    {
-        return Socialite::driver('google')->redirect();
-    }
-
-    public function handleGoogleCallback()
-    {
-        $user = Socialite::driver('google')->user();
-
-        // Vérifiez si l'utilisateur existe déjà dans votre base de données
-        $existingUser = User::where('email', $user->email)->first();
-
-        if ($existingUser) {
-            Auth::login($existingUser);
-            $token = $existingUser->createToken('MyApp')->accessToken;
-        } else {
-            // Si l'utilisateur n'existe pas, créez-le
-            $newUser = User::create([
-                'name' => $user->name,
-                'email' => $user->email,
-                'password' => bcrypt(str_random(16)), // ou utilisez une autre méthode pour générer un mot de passe aléatoire
-            ]);
-
-            Auth::login($newUser);
-            $token = $newUser->createToken('MyApp')->accessToken;
-        }
-
-        return response()->json(['token' => $token, 'user' => Auth::user()], 200);
-    }
-
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [

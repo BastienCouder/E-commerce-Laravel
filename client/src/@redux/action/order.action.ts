@@ -1,6 +1,6 @@
 import axiosClient from "@/lib/axios-client";
 import { authToken } from "@/lib/token";
-import { Order, OrderItem } from "@/types/Order";
+import { Order } from "@/types/Order";
 import { Dispatch } from "redux";
 import { readCart } from "./cart.action";
 import { readAllProducts } from "./products.action";

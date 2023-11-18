@@ -52,6 +52,7 @@ export const readProduct = (productId: string): any => {
       dispatch(readProductRequest());
 
       const response = await axiosClient.get<Product>(`/products/${productId}`);
+
       dispatch(readProductSuccess(response.data));
     } catch (error: any) {
       dispatch(readProductError(error.message));
@@ -115,7 +116,6 @@ export const createProduct = (productData: any): any => {
         "/products",
         productData
       );
-      console.log(response.data);
 
       dispatch(createProductSuccess(response.data));
       dispatch(readAllProducts());

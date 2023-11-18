@@ -49,9 +49,6 @@ protected function handleDelete($cartId)
     return Auth::check() ? $this->softDelete($cartId) : $this->publicSoftDelete($cartId);
 }
 
-
-
-
     //GET SOFT DELETE
     // $deletedCartItems = CartItem::onlyTrashed()->get();
 
@@ -99,17 +96,13 @@ public function publicRead(Request $request)
     public function create(Request $request)
     {
         try {
-            // Validation des données de la requête
             $request->validate([
                 'productId' => 'required|exists:products,id',
             ]);
             
             $productId = $request->input('productId');
-            error_log("Requested Product ID: " . $productId);
             $user = Auth::user();
-            error_log("User ID: " . ($user ? $user->id : "Guest"));
-    
-            // Vérifier si l'utilisateur est authentifié
+            
             if ($user && Auth::check()) {
                 $cart = $user->cart;
             
@@ -120,8 +113,6 @@ public function publicRead(Request $request)
                     $cart->user()->associate($user);
                     $cart->save();
                 }
-            
-                error_log("Cart ID: " . $cart->id);
             } else {
                     error_log("Aucun panier");
             }
@@ -131,7 +122,6 @@ public function publicRead(Request $request)
     
             if ($product) {
                 $existingCartItem = $cart->cartItems()->where('product_id', $productId)->first();
-                error_log("Existing Cart Item: " . json_encode($existingCartItem));
     
                 if ($existingCartItem) {
                     $existingCartItem->quantity += 1;
@@ -141,7 +131,6 @@ public function publicRead(Request $request)
                     $cartItem->cart()->associate($cart);
                     $cartItem->product()->associate($product);
                     $cartItem->save();
-                    error_log("Cart Item: " . json_encode($cartItem));
                 }
     
                 $cart->total_price += $product->price;
@@ -151,7 +140,6 @@ public function publicRead(Request $request)
             }
 
         } catch (\Exception $e) {
-            // Gérer l'exception si elle se produit
             error_log($e->getMessage());
             error_log("Exception Trace: " . $e->getTraceAsString());
             return response()->json(['message' => 'Une erreur s\'est produite'], Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -167,52 +155,35 @@ public function publicRead(Request $request)
 
         $productId = $request->input('productId');
         $cartId = $request->input('cartId');
-        error_log("Requested Product ID: " . $productId);
-        error_log("Requested Cart ID: " . $cartId);
-
-        // L'utilisateur n'est pas authentifié, utilisez la session pour le panier
         $cart = session('cart', []);
 
         if ($cartId) {
-            // Si un 'cartId' est spécifié, chargez le panier existant
             $cart = Cart::with('cartItems')->find($cartId);
             if ($cart) {
-                // Stockez l'ID du panier dans la session
                 session(['cart' => ['id' => $cart->id]]);
             }
         } elseif (empty($cart)) {
-            // Si 'cartId' n'est pas spécifié et le panier de session est vide, créez un nouveau panier
             $cart = new Cart();
             $cart->total_price = 0;
             $cart->status = 'active';
             $cart->save();
-            // Stockez l'ID du panier dans la session
             session(['cart' => ['id' => $cart->id]]);
         }
-
-        // Vous pouvez accéder à l'ID du panier de la session de cette manière (à des fins de journalisation par exemple)
-        error_log("Cart ID: " . ($cart['id'] ?? "N/A"));
 
         $product = Product::find($productId);
 
         if ($product) {
             $existingCartItem = $cart->cartItems->where('product_id', $productId)->first();
-            error_log("Existing Cart Item: " . json_encode($existingCartItem));
-
             if ($existingCartItem) {
-                // Le produit existe déjà dans le panier, incrémentez simplement la quantité
                 $existingCartItem->quantity += 1;
                 $existingCartItem->save();
             } else {
-                // Le produit n'existe pas encore dans le panier, créez un nouvel élément de panier
                 $cartItem = new CartItem(['quantity' => 1]);
                 $cartItem->cart()->associate($cart);
                 $cartItem->product()->associate($product);
                 $cartItem->save();
-                error_log("Cart Item: " . json_encode($cartItem));
             }
 
-            // Mettre à jour le total_price du panier
             $cart->total_price += $product->price;
             $cart->save();
         }
@@ -223,7 +194,6 @@ public function publicRead(Request $request)
             'cartItems' => $cart->cartItems,
         ])->withCookie(cookie('cart_id', $cart->id, 60 * 24 * 30));
     } catch (\Exception $e) {
-        // Gérer l'exception si elle se produit
         error_log($e->getMessage());
         error_log("Exception Trace: " . $e->getTraceAsString());
         return response()->json(['message' => 'Une erreur s\'est produite'], Response::HTTP_INTERNAL_SERVER_ERROR);
