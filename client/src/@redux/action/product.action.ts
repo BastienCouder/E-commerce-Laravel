@@ -3,6 +3,7 @@ import axiosClient from "@/lib/axios-client";
 import { Product } from "@/types/Product";
 import { readAllProducts } from "./products.action";
 
+// READ
 // Action type constants
 export const READ_PRODUCT_REQUEST = "READ_PRODUCT_REQUEST";
 export const READ_PRODUCT_SUCCESS = "READ_PRODUCT_SUCCESS";
@@ -20,7 +21,7 @@ interface ReadProductSuccessAction {
 
 interface ReadProductErrorAction {
   type: typeof READ_PRODUCT_ERROR;
-  payload: string;
+  error: string;
 }
 
 // Action creator functions
@@ -35,18 +36,12 @@ export const readProductSuccess = (
   payload,
 });
 
-export const readProductError = (payload: string): ReadProductErrorAction => ({
+export const readProductError = (error: string): ReadProductErrorAction => ({
   type: READ_PRODUCT_ERROR,
-  payload,
+  error,
 });
 
-export type ProductAction =
-  | ReadProductRequestAction
-  | ReadProductSuccessAction
-  | ReadProductErrorAction;
-
-// Async action creator function
-export const readProduct = (productId: string): any => {
+export const readProduct = (productId: number): any => {
   return async (dispatch: Dispatch) => {
     try {
       dispatch(readProductRequest());
@@ -56,7 +51,7 @@ export const readProduct = (productId: string): any => {
       dispatch(readProductSuccess(response.data));
     } catch (error: any) {
       dispatch(readProductError(error.message));
-      console.error("Error fetching products:", error);
+      console.error("Error reading product:", error);
     }
   };
 };

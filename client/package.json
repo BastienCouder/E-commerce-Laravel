@@ -11,6 +11,7 @@
     },
     "dependencies": {
         "@hookform/resolvers": "^3.3.2",
+        "@motionone/utils": "^10.16.3",
         "@radix-ui/react-accordion": "^1.1.2",
         "@radix-ui/react-alert-dialog": "^1.0.5",
         "@radix-ui/react-checkbox": "^1.0.4",
@@ -29,6 +30,7 @@
         "axios": "^1.6.0",
         "class-variance-authority": "^0.7.0",
         "clsx": "^2.0.0",
+        "framer-motion": "^10.16.5",
         "install": "^0.13.0",
         "js-cookie": "^3.0.5",
         "lucide-react": "^0.292.0",

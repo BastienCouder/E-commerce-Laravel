@@ -9,9 +9,36 @@ import { RootState } from "./@redux/store";
 import ErrorPage from "./error-page";
 import { readAllProducts } from "./@redux/action/products.action";
 import { Link } from "react-router-dom";
+import { ShieldCheck, TrendingUp, CheckSquare, LineChart } from "lucide-react";
+import { Separator } from "./components/ui/separator";
+import ScrollVelocity from "@/components/ScrollVelocity";
 
 export default function root() {
   const iconUrl = "/vite.svg";
+
+  const data = [
+    {
+      id: 1,
+      title: "Performances de Pointe",
+      icon: <TrendingUp size={55} strokeWidth={1} color="#fff" />,
+    },
+    {
+      id: 2,
+      title: "Style et Confort",
+      icon: <CheckSquare size={55} strokeWidth={1} color="#fff" />,
+    },
+    {
+      id: 3,
+      title: "Sécurité Avant Tout",
+      icon: <ShieldCheck size={55} strokeWidth={1} color="#fff" />,
+    },
+    {
+      id: 4,
+      title: "Expérience Hivernale Complète",
+      icon: <LineChart size={55} strokeWidth={1} color="#fff" />,
+    },
+  ];
+
   const categories = [
     {
       src: "./images/ski-alpin.jpg",
@@ -77,19 +104,53 @@ export default function root() {
       </Helmet>
 
       <div className="space-y-2">
+        <section className="flex flex-col lg:flex-row lg:h-[30rem] relative">
+          <div className="relative lg:w-2/3 h-full">
+            <figure className="relative w-full h-full">
+              <img
+                src="./images/accueil.jpg"
+                alt="banniere"
+                className="h-full w-full object-cover brightness-50 grayscale-[50%]"
+              />
+              <h1 className="text-white text-2xl md:text-4xl absolute top-5 md:top-20 left-5 md:left-32 pr-10">
+                Nouvelle collection !!
+              </h1>
+              <h2 className="text-white text-sm md:text-lg absolute top-14 left-5 md:top-36 md:left-32 pr-10">
+                Équipez-vous pour l'aventure hivernale, où style, performance et
+                sécurité se rencontrent sur chaque piste
+              </h2>
+            </figure>
+            <div className="absolute bottom-0 right-0 w-[20rem] h-10 md:h-20 bg-primary"></div>
+          </div>
+          <div className="hidden lg:flex lg:w-1/3 bg-primary items-center justify-center h-full p-4 text-white">
+            <ul className="flex lg:flex-col justify-center h-full space-y-8">
+              {data.map((item) => (
+                <li key={item.id} className="flex flex-col">
+                  <div className="flex items-start text-sm space-x-8">
+                    <p>{item.icon}</p>
+                    <h3 className="uppercase">
+                      {item.title}
+                      <Separator className="mt-2 h-1" />
+                    </h3>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
         <section className="relative">
           <figure className="z-10 absolute md:left-10 md:top-5">
             <img
               src="./images/snowboard.png"
-              alt=""
-              className="h-[10rem] md:h-[15rem] xl:h-[20rem]"
+              alt="snowboard"
+              className="scale h-[10rem] md:h-[15rem] xl:h-[20rem]"
             />
           </figure>
           <figure className="z-10 absolute right-60 top-0">
             <img
               src="./images/telesiege.png"
-              alt=""
-              className="hidden xl:block xl:h-[15rem]"
+              alt="telesiege"
+              className="scale hidden xl:block xl:h-[15rem]"
             />
           </figure>
         </section>
@@ -113,25 +174,24 @@ export default function root() {
           <figure className="z-10 absolute left-0 -bottom-28 md:bottom-0">
             <img
               src="./images/telepherique.png"
-              alt=""
-              className="h-[10rem] md:h-[22rem]"
+              alt="telepherique"
+              className="scale h-[10rem] md:h-[22rem]"
             />
           </figure>
         </section>
-
-        <section className="relative px-12 space-y-2 pt-4">
+        <div>
+          <ScrollVelocity />
+        </div>
+        <section className="relative px-12 space-y-2 py-4">
           {valueProducts.length > 0 && (
             <>
               <figure className="z-10 absolute right-0 md:right-5 top-0">
                 <img
                   src="./images/masque.png"
-                  alt=""
-                  className="h-[4rem] md:h-[8rem] xl: h-[10rem]"
+                  alt="masque"
+                  className="scale h-[4rem] md:h-[7rem]"
                 />
               </figure>
-              <h2 className="w-full text-xl flex justify-center">
-                En ce moment
-              </h2>
               <ul className="w-full flex overflow-x-auto">
                 {valueProducts &&
                   valueProducts.map((product, index) => (

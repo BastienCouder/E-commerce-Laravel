@@ -39,7 +39,9 @@ export default function CardProduct({
               />
             </figure>
             {isNew && (
-              <Badge className="absolute top-5 left-0 md:left-5">Nouveau</Badge>
+              <Badge className="absolute top-10 left-5 md:top-5 md:left-0 md:left-5">
+                Nouveau
+              </Badge>
             )}
           </div>
         </Link>
@@ -54,11 +56,14 @@ export default function CardProduct({
           </>
         ) : (
           <>
-            <div className="p-2 space-y-2">
+            <div
+              className={` p-2 space-y-2 flex flex-col justify-between items-end${
+                product.name.length > 24 ? "h-[160px]" : "h-[120px]"
+              }`}
+            >
               <h2>{product.name}</h2>
               <p>{formatPrice(product.price, "EUR")}</p>
-              <p className="h-16">
-                Description courte :
+              <p className={` ${product.name.length > 10 ? "mb-8" : ""}`}>
                 {formatDescription(product.shortDescription)}
               </p>
             </div>

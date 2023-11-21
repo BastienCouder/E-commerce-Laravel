@@ -36,7 +36,7 @@ interface ReadProductSuccessAction {
 
 interface ReadProductErrorAction {
   type: typeof READ_PRODUCT_ERROR;
-  payload: string;
+  error: string;
 }
 
 interface CreateProductRequestAction {
@@ -142,7 +142,7 @@ export default function productReducer(
       return {
         ...state,
         loading: false,
-        error: action.payload,
+        error: action.error,
       };
 
     case CREATE_PRODUCT_REQUEST:

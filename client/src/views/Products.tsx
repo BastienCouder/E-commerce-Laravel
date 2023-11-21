@@ -26,14 +26,9 @@ export default function Products() {
   useEffect(() => {
     if (products && !loading && !error) {
       dispatch(readAllProducts());
-    }
-  }, [dispatch, products]);
-
-  useEffect(() => {
-    if (products && !loading) {
       setIsLoading(false);
     }
-  }, [products]);
+  }, [dispatch, products]);
 
   const categoryProducts = isLoading
     ? Array.from({ length: 10 }).fill({})
