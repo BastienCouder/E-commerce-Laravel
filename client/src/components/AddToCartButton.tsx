@@ -14,6 +14,7 @@ export default function AddToCartButton({ productId }: AddToCartButtonProps) {
 
   const handleAddToCartClick = async () => {
     dispatch(createCartItem(productId));
+    return isPending;
   };
 
   return (

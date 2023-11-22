@@ -207,8 +207,7 @@ export type UpdateQuantityAction =
 // Async action creator function
 export const updateQuantity = (
   cartItemId: number,
-  newQuantity: number,
-  state: any
+  newQuantity: number
 ): any => {
   return async (dispatch: Dispatch) => {
     try {

@@ -18,6 +18,7 @@ export default function AddToOrder({
 
   const handleAddToOrderClick = async () => {
     dispatch(createOrderItem(cartId, deliveryItemId));
+    return isPending;
   };
 
   return (
