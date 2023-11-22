@@ -1,2 +1,2 @@
 import "./bootstrap";
-import "client/src/main.tsx";
+import "./client/src/main.tsx";

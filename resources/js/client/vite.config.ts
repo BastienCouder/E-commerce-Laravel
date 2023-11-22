@@ -1,6 +1,6 @@
 import path from "path";
 import react from "@vitejs/plugin-react-swc";
-import { defineConfig } from "vite";
+import { UserConfigExport, defineConfig } from "vite";
 
 export default defineConfig({
   plugins: [react()],
@@ -10,6 +10,9 @@ export default defineConfig({
     },
   },
   build: {
-    outDir: "../../../public/react-app", // Assurez-vous que ce chemin correspond à votre dossier Laravel public
+    outDir: "../../../public/react-app",
   },
-});
+  rollupOptions: {
+    external: ["client/src/main.tsx"],
+  },
+} as UserConfigExport);
