@@ -35,7 +35,7 @@ export default function Cart() {
 
   const handleUpdateQuantity = (cartItemId: number, newQuantity: number) => {
     if (newQuantity > 0) {
-      dispatch(updateQuantity(cartItemId, newQuantity, state.user));
+      dispatch(updateQuantity(cartItemId, newQuantity));
     } else {
       dispatch(deleteCartItem(cartItemId, state.user));
     }
