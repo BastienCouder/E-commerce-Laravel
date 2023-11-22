@@ -1,7 +1,8 @@
-import React, { createContext, useReducer, useContext, useEffect } from "react";
+import { createContext, useReducer, useContext, useEffect } from "react";
 import axios from "axios";
-import Cookies from "js-cookie";
+
 import { User } from "@/types/User";
+import Cookies from "js-cookie";
 
 interface AuthState {
   user: User | null;

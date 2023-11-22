@@ -3,7 +3,7 @@ import { useCallback, useState } from "react";
 
 //zod
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+
 import {
   LoginSchema,
   LoginValues,
@@ -41,6 +41,7 @@ import { login, register } from "@/@redux/action/auth.action";
 import Cookies from "js-cookie";
 import { mergeCart } from "@/@redux/action/cart.action";
 import { useAuth } from "@/context/authContext";
+import { useForm } from "react-hook-form";
 
 export default function Auth() {
   const { state } = useAuth();

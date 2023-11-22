@@ -1,7 +1,7 @@
 <?php
 
+use App\Http\Controllers\ReactController;
 use Illuminate\Support\Facades\Route;
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -13,7 +13,4 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
+Route::get('/react-app', [ReactController::class, 'index']);
